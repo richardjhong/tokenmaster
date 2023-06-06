@@ -1,24 +1,85 @@
 import { ethers } from "hardhat";
 
-async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const unlockTime = currentTimestampInSeconds + 60;
+const tokens = (n: number) => {
+  return ethers.utils.parseUnits(n.toString(), "ether");
+};
 
-  const lockedAmount = ethers.utils.parseEther("0.001");
+const occasions = [
+  {
+    name: "Bachfest Leipzig",
+    cost: tokens(3),
+    tickets: 0,
+    date: "June 8",
+    time: "6:00PM EST",
+    location: "Leipzig, Germany",
+  },
+  {
+    name: "ETH Tokyo",
+    cost: tokens(1),
+    tickets: 125,
+    date: "Jun 2",
+    time: "1:00PM JST",
+    location: "Tokyo, Japan",
+  },
+  {
+    name: "ETH Privacy Hackathon",
+    cost: tokens(0.25),
+    tickets: 200,
+    date: "Jun 9",
+    time: "10:00AM TRT",
+    location: "Turkey, Istanbul",
+  },
+  {
+    name: "The Book Of Mormon - San Francisco",
+    cost: tokens(2),
+    tickets: 100,
+    date: "Jun 11",
+    time: "6:30PM PST",
+    location: "Orpheum Theatre - San Francisco, CA",
+  },
+  {
+    name: "ETH Global New York",
+    cost: tokens(1.5),
+    tickets: 125,
+    date: "Sept 22",
+    time: "11:00AM EST",
+    location: "New York, United States",
+  },
+];
 
-  const Lock = await ethers.getContractFactory("Lock");
-  const lock = await Lock.deploy(unlockTime, { value: lockedAmount });
+const main = async () => {
+  // Setup accounts & variables
+  const [deployer] = await ethers.getSigners();
+  const NAME = "TokenMaster";
+  const SYMBOL = "TM";
 
-  await lock.deployed();
+  // Deploy contract
+  const TokenMaster = await ethers.getContractFactory("TokenMaster");
+  const tokenMaster = await TokenMaster.deploy(NAME, SYMBOL);
+  await tokenMaster.deployed();
 
-  console.log(
-    `Lock with ${ethers.utils.formatEther(lockedAmount)}ETH and unlock timestamp ${unlockTime} deployed to ${lock.address}`
-  );
-}
+  console.log(`TokenMaster Contract deployed at: ${tokenMaster.address}\n`);
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+  for (const [index, occasion] of occasions.entries()) {
+    const tx = await tokenMaster
+      .connect(deployer)
+      .list(
+        occasion.name,
+        occasion.cost,
+        occasion.tickets,
+        occasion.date,
+        occasion.time,
+        occasion.location
+      );
+
+    await tx.wait();
+    console.log(`Listed Event: ${index + 1}: ${occasion.name}`);
+  }
+};
+
+main()
+  .then(() => process.exit(0))
+  .catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
