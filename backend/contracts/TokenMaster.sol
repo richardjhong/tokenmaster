@@ -36,6 +36,7 @@ contract TokenMaster is ERC721 {
   }
 
   /// @notice list increments the totalOccasions and creates a new Occasion
+  /// @dev only the deployer/contract owner can invoke listing an occasion
   /// @param _name - Name of occasion
   /// @param _cost - Cost of occasion
   /// @param _maxTickets - Maximum tickets of occasion
@@ -96,8 +97,16 @@ contract TokenMaster is ERC721 {
   }
 
   /// @notice getSeatsTaken returns the mapped array of seatsTaken associated with the input _id
+  /// @param _id - ID of occasion to search associated seats with
   /// @return Array of seats
   function getSeatsTaken(uint256 _id) public view returns (uint256[] memory) {
     return seatsTaken[_id];
+  }
+
+  /// @notice withdraw sends the funds the contracts currently holds to the contract owner
+  /// @dev only the contract owner may invoke withdrawing of contract funds
+  function withdraw() public onlyOwner {
+    (bool success, ) = owner.call{value: address(this).balance}("");
+    require(success, "Failed to send ETH");
   }
 }

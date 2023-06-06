@@ -1,6 +1,6 @@
 import { ethers } from "hardhat";
 import { expect } from "chai";
-import { Signer } from "ethers";
+import { Signer, BigNumber } from "ethers";
 import { TokenMaster } from "../typechain-types";
 
 const NAME = "TokenMaster";
@@ -121,6 +121,33 @@ describe("TokenMaster", () => {
     it("Should update the contract balance", async () => {
       const balance = await ethers.provider.getBalance(tokenMaster.address);
       expect(balance).to.be.equal(AMOUNT);
+    });
+  });
+
+  describe("Withdrawing", async () => {
+    const ID = 1;
+    const SEAT = 50;
+    const AMOUNT = ethers.utils.parseUnits("1", "ether");
+    let balanceBefore: BigNumber;
+
+    beforeEach(async () => {
+      balanceBefore = await ethers.provider.getBalance(await deployer.getAddress());
+
+      let tx = await tokenMaster.connect(buyer).mint(ID, SEAT, { value: AMOUNT });
+      await tx.wait();
+
+      tx = await tokenMaster.connect(deployer).withdraw();
+      await tx.wait();
+    });
+
+    it("Should update the owner balance", async () => {
+      const balanceAfter = await ethers.provider.getBalance(await deployer.getAddress());
+      expect(balanceAfter).to.be.greaterThan(balanceBefore);
+    });
+
+    it("Should update the contract balance after withdrawal", async () => {
+      const balance = await ethers.provider.getBalance(tokenMaster.address);
+      expect(balance).to.be.equal(0);
     });
   });
 });
