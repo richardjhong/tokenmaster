@@ -3,6 +3,8 @@ pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
+/// @title A contract dealing with NFTs that correlate to unique seats for unique occasions
+/// @author Richard J. Hong
 contract TokenMaster is ERC721 {
   address public owner;
   uint256 public totalOccasions;
@@ -33,6 +35,13 @@ contract TokenMaster is ERC721 {
     owner = msg.sender;
   }
 
+  /// @notice list increments the totalOccasions and creates a new Occasion
+  /// @param _name - Name of occasion
+  /// @param _cost - Cost of occasion
+  /// @param _maxTickets - Maximum tickets of occasion
+  /// @param _date - Date of occasion
+  /// @param _time - Time of occasion
+  /// @param _location - Location of occasion
   function list(
     string memory _name,
     uint256 _cost,
@@ -54,6 +63,34 @@ contract TokenMaster is ERC721 {
     );
   }
 
+  /// @notice mint uses ERC721 to safely mint a new token after going through validation and upkeep of storage variables
+  /// @param _id - ID of the occasion being searched
+  /// @param _seat - Seat that is being reserved
+  function mint(uint256 _id, uint256 _seat) public payable {
+    // Require that id is within valid range of totalOccasions
+    require(_id != 0, "Invalid ticket id");
+    require(_id <= totalOccasions, "Invalid ticket id, the searched occasion does not exist");
+
+    // Require that the payment is enough
+    require(msg.value >= occasions[_id].cost, "Payment is not enough to reserve seat");
+
+    // Require that seat is not taken and that seat exists
+    require(seatTaken[_id][_seat] == address(0), "This seat has already been taken");
+    require(_seat <= occasions[_id].maxTickets, "This is not a valid seat number");
+
+    occasions[_id].tickets--;
+    hasBought[_id][msg.sender] = true;
+    seatTaken[_id][_seat] = msg.sender;
+
+    seatsTaken[_id].push(_seat);
+
+    totalSupply++;
+    _safeMint(msg.sender, totalSupply);
+  }
+
+  /// @notice getOccasion returns the occasion associated with the input _id
+  /// @param _id - ID of the occasion to retrieve
+  /// @return Occasion struct mapped to the input _id
   function getOccasion(uint256 _id) public view returns (Occasion memory) {
     return occasions[_id];
   }
