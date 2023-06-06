@@ -3,7 +3,7 @@ pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
-/// @title A contract dealing with NFTs that correlate to unique seats for unique occasions
+/// @title A contract dealing with NFTs of unique seats mapped to unique occasions
 /// @author Richard J. Hong
 contract TokenMaster is ERC721 {
   address public owner;
