@@ -94,4 +94,10 @@ contract TokenMaster is ERC721 {
   function getOccasion(uint256 _id) public view returns (Occasion memory) {
     return occasions[_id];
   }
+
+  /// @notice getSeatsTaken returns the mapped array of seatsTaken associated with the input _id
+  /// @return Array of seats
+  function getSeatsTaken(uint256 _id) public view returns (uint256[] memory) {
+    return seatsTaken[_id];
+  }
 }
