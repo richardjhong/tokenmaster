@@ -149,5 +149,11 @@ describe("TokenMaster", () => {
       const balance = await ethers.provider.getBalance(tokenMaster.address);
       expect(balance).to.be.equal(0);
     });
+
+    it("Should revert when anyone other than the contract owner/deployer tries to withdraw contract funds", async () => {
+      await expect(tokenMaster.connect(buyer).withdraw()).to.be.revertedWith(
+        "Only the contract owner can call this"
+      );
+    });
   });
 });
