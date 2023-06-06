@@ -70,5 +70,20 @@ describe("TokenMaster", () => {
       expect(occasion.time).to.be.equal(OCCASION_TIME);
       expect(occasion.location).to.be.equal(OCCASION_LOCATION);
     });
+
+    it("Should revert when anyone other than the contract owner/deployer tries to list an occasion", async () => {
+      await expect(
+        tokenMaster
+          .connect(buyer)
+          .list(
+            OCCASION_NAME,
+            OCCASION_COST,
+            OCCASION_MAX_TICKETS,
+            OCCASION_DATE,
+            OCCASION_TIME,
+            OCCASION_LOCATION
+          )
+      ).to.be.revertedWith("Only the contract owner can call this");
+    });
   });
 });

@@ -25,7 +25,7 @@ contract TokenMaster is ERC721 {
   mapping(uint256 => uint256[]) seatsTaken;
 
   modifier onlyOwner() {
-    require(msg.sender == owner);
+    require(msg.sender == owner, "Only the contract owner can call this");
     _;
   }
 
