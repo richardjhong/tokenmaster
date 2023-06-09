@@ -65,14 +65,14 @@ const Navbar: React.FC<NavbarProps> = ({ account, setAccount }) => {
       {account ? (
         <button
           type='button'
-          className='w-175 h-50 ml-auto mr-75 bg-white bg-opacity-20 text-white border-none rounded-md font-open-sans text-1.10em font-semibold cursor-pointer transition-all duration-250 ease-out hover:bg-dark-blue'
+          className='w-200 h-50 ml-auto mr-75 bg-white bg-opacity-20 text-white border-none rounded-md font-open-sans text-1.10em font-semibold cursor-pointer transition-all duration-250 ease-out hover:bg-indigo-900'
         >
           {account.slice(0, 6) + "..." + account.slice(38, 42)}
         </button>
       ) : (
         <button
           type='button'
-          className='w-175 h-50 ml-auto mr-75 bg-white bg-opacity-20 text-white border-none rounded-md font-open-sans text-1.10em font-semibold cursor-pointer transition-all duration-250 ease-out hover:bg-dark-blue'
+          className='w-200 h-50 ml-auto mr-75 bg-white bg-opacity-20 text-white border-none rounded-md font-open-sans text-1.10em font-semibold cursor-pointer transition-all duration-250 ease-out hover:bg-indigo-900'
           onClick={connectHandler}
         >
           Connect
