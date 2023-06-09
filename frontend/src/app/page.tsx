@@ -3,8 +3,7 @@
 import { ethers, providers, BigNumber } from "ethers";
 import { useState, useEffect } from "react";
 import { NETWORK_CONFIG, TOKENMASTER_CONTRACT_ABI } from "../../constants";
-import Navbar from "./components/Navbar";
-import Card from "./components/Card";
+import { Card, Navbar, Sort } from "./components";
 
 export interface Occasion {
   id: BigNumber;
@@ -73,18 +72,19 @@ const Home = () => {
           <strong>Event</strong> Tickets
         </h2>
       </header>
+
+      <Sort />
+
       <div className='items-center w-65 max-w-550 h-75 mx-auto relative transition-all duration-250 ease'>
         {occasions.map((occasion, index) => (
-          <>
-            <Card
-              key={occasion.id.toString()}
-              id={index + 1}
-              occasion={occasion}
-              toggle={toggle}
-              setToggle={setToggle}
-              setOccasion={setOccasion}
-            />
-          </>
+          <Card
+            key={occasion.id.toString()}
+            id={index + 1}
+            occasion={occasion}
+            toggle={toggle}
+            setToggle={setToggle}
+            setOccasion={setOccasion}
+          />
         ))}
       </div>
     </>
