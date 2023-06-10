@@ -2,10 +2,10 @@
 
 import { ethers, providers, BigNumber } from "ethers";
 import { useState, useEffect } from "react";
-import Navbar from "./components/Navbar";
 import { NETWORK_CONFIG, TOKENMASTER_CONTRACT_ABI } from "../../constants";
+import { Card, Navbar, Sort } from "./components";
 
-interface Occasion {
+export interface Occasion {
   id: BigNumber;
   name: string;
   cost: BigNumber;
@@ -19,7 +19,9 @@ interface Occasion {
 const Home = () => {
   const [account, setAccount] = useState<string | null>(null);
   const [provider, setProvider] = useState<providers.Web3Provider | null>(null);
-  const [occasions, setOccasions] = useState<Occasion[] | []>([]);
+  const [occasions, setOccasions] = useState<Occasion[]>([]);
+  const [occasion, setOccasion] = useState<Occasion | null>(null);
+  const [toggle, setToggle] = useState<boolean>(false);
 
   const loadBlockchainData = async () => {
     const provider = new providers.Web3Provider((window as any).ethereum);
@@ -60,15 +62,32 @@ const Home = () => {
   }, []);
 
   return (
-    <header className='bg-gradient-banner from-indigo-900 via-blue-500 to-indigo-900 min-h-[25vh] relative'>
-      <Navbar
-        account={account}
-        setAccount={setAccount}
-      />
-      <h2 className='absolute bottom-5 left-20 text-white text-2xl sm:text-5xl md:text-3xl font-light'>
-        <strong>Event</strong> Tickets
-      </h2>
-    </header>
+    <>
+      <header className='bg-gradient-banner from-indigo-900 via-blue-500 to-indigo-900 min-h-[25vh] relative'>
+        <Navbar
+          account={account}
+          setAccount={setAccount}
+        />
+        <h2 className='absolute bottom-5 left-20 text-white text-2xl sm:text-5xl md:text-3xl font-light'>
+          <strong>Event</strong> Tickets
+        </h2>
+      </header>
+
+      <Sort />
+
+      <div className='items-center w-65 max-w-550 h-75 mx-auto relative transition-all duration-250 ease'>
+        {occasions.map((occasion, index) => (
+          <Card
+            key={occasion.id.toString()}
+            id={index + 1}
+            occasion={occasion}
+            toggle={toggle}
+            setToggle={setToggle}
+            setOccasion={setOccasion}
+          />
+        ))}
+      </div>
+    </>
   );
 };
 
