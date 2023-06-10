@@ -3,7 +3,7 @@
 import { ethers, providers, BigNumber } from "ethers";
 import { useState, useEffect } from "react";
 import { NETWORK_CONFIG, TOKENMASTER_CONTRACT_ABI } from "../../constants";
-import { Card, Navbar, Sort } from "./components";
+import { Card, Navbar, Sort, SeatChart } from "./components";
 
 export interface Occasion {
   id: BigNumber;
@@ -22,6 +22,8 @@ const Home = () => {
   const [occasions, setOccasions] = useState<Occasion[]>([]);
   const [occasion, setOccasion] = useState<Occasion | null>(null);
   const [toggle, setToggle] = useState<boolean>(false);
+  const [tokenMasterContract, setTokenMasterContract] =
+    useState<ethers.Contract | null>(null);
 
   const loadBlockchainData = async () => {
     const provider = new providers.Web3Provider((window as any).ethereum);
@@ -35,6 +37,7 @@ const Home = () => {
       TOKENMASTER_CONTRACT_ABI,
       provider,
     );
+    setTokenMasterContract(tokenMasterContract);
 
     const totalOccasions = await tokenMasterContract.totalOccasions();
     const occasions: Occasion[] = [];
@@ -87,6 +90,15 @@ const Home = () => {
           />
         ))}
       </div>
+
+      {toggle && (
+        <SeatChart
+          occasion={occasion!}
+          tokenMasterContract={tokenMasterContract!}
+          provider={provider!}
+          setToggle={setToggle}
+        />
+      )}
     </>
   );
 };
