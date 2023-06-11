@@ -1,7 +1,12 @@
 export const NETWORK_CONFIG: { [key: string]: { address: string } } = {
+  // localhost
   "31337": {
     address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
   },
+  // sepolia
+  "11155111": {
+    address: "0x061B7d1c4190A14E14D19cf7CE73cAA397234596"
+  }
 };
 
 export const TOKENMASTER_CONTRACT_ABI = [
