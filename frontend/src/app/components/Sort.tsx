@@ -31,7 +31,7 @@ const Sort: React.FC<SortProps> = ({ contractOwnerConnected }) => {
           onClick={() => console.log("ready to work")}
           className='col-span-3 row-span-2 place-self-center w-32 h-10 bg-light-blue text-white ml-auto border-none rounded-md font-open-sans text-base font-semibold cursor-pointer transition-all duration-250 ease bg-blue-600'
         >
-          Add Occassion
+          Add Event
         </button>
       )}
     </div>
