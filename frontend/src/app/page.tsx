@@ -24,6 +24,8 @@ const Home = () => {
   const [toggle, setToggle] = useState<boolean>(false);
   const [tokenMasterContract, setTokenMasterContract] =
     useState<ethers.Contract | null>(null);
+  const [contractOwnerConnected, setContractOwnerConnected] =
+    useState<boolean>(false);
 
   const loadBlockchainData = async () => {
     const provider = new providers.Web3Provider((window as any).ethereum);
@@ -61,6 +63,20 @@ const Home = () => {
     loadBlockchainData();
   }, []);
 
+  useEffect(() => {
+    const fetchContractOwner = async () => {
+      if (tokenMasterContract) {
+        const contractOwner = await tokenMasterContract.owner();
+
+        contractOwner === account
+          ? setContractOwnerConnected(true)
+          : setContractOwnerConnected(false);
+      }
+    };
+
+    fetchContractOwner();
+  }, [tokenMasterContract, account]);
+
   return (
     <>
       <header className='bg-gradient-banner from-indigo-900 via-blue-500 to-indigo-900 min-h-[25vh] relative'>
@@ -74,6 +90,14 @@ const Home = () => {
       </header>
 
       <Sort />
+      {contractOwnerConnected && (
+        <button
+          onClick={() => console.log("ready to work")}
+          className='col-span-3 row-span-2 place-self-center w-32 h-10 bg-light-blue text-white ml-auto border-none rounded-md font-open-sans text-base font-semibold cursor-pointer transition-all duration-250 ease bg-blue-600'
+        >
+          Owner
+        </button>
+      )}
 
       <div className='items-center max-w-7xl h-75 mx-auto relative transition-all duration-250 ease'>
         {occasions.map((occasion, index) => (
