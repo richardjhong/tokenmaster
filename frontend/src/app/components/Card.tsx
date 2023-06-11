@@ -17,7 +17,6 @@ const Card: React.FC<CardProps> = ({
 }) => {
   const togglePop = () => {
     setOccasion(occasion);
-    console.log("clicked");
     toggle ? setToggle(false) : setToggle(true);
   };
 
@@ -28,18 +27,16 @@ const Card: React.FC<CardProps> = ({
           <span className='font-bold'>{occasion.date}</span>
           <br /> {occasion.time}
         </p>
-        <p className='col-span-6 row-span-1 self-center align-bottom text-center font-semibold font-open-sans text-base sm:text-3xl md:text-xl'>
-          {occasion.name}
+        <p className='col-span-6 row-span-2 self-center text-center font-open-sans text-base sm:text-3xl md:text-xl'>
+          <span className="font-bold">{occasion.name}</span>
+          <br /> {occasion.location}
         </p>
-        <p className='col-span-6 row-span-1 self-center align-top text-center text-xl font-light'>
-          {occasion.location}
-        </p>
-        <p className='card__cost col-span-1 row-span-2 self-center text-base sm:text-3xl font-light'>
-          <strong>
+        <div className='col-span-1 row-span-2 self-center text-base sm:text-3xl font-light'>
+          <p className="font-semibold">
             {utils.formatUnits(occasion.cost.toString(), "ether")}
-          </strong>{" "}
+          </p>{" "}
           ETH
-        </p>
+        </div>
         {occasion.tickets.toString() === "0" ? (
           <button
             type='button'

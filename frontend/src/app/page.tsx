@@ -3,7 +3,7 @@
 import { ethers, providers, BigNumber } from "ethers";
 import { useState, useEffect } from "react";
 import { NETWORK_CONFIG, TOKENMASTER_CONTRACT_ABI } from "../../constants";
-import { Card, Navbar, Sort } from "./components";
+import { Card, Navbar, Sort, SeatChart } from "./components";
 
 export interface Occasion {
   id: BigNumber;
@@ -22,19 +22,21 @@ const Home = () => {
   const [occasions, setOccasions] = useState<Occasion[]>([]);
   const [occasion, setOccasion] = useState<Occasion | null>(null);
   const [toggle, setToggle] = useState<boolean>(false);
+  const [tokenMasterContract, setTokenMasterContract] =
+    useState<ethers.Contract | null>(null);
 
   const loadBlockchainData = async () => {
     const provider = new providers.Web3Provider((window as any).ethereum);
     setProvider(provider);
 
     const { chainId } = await provider.getNetwork();
-    console.log("chainId: ", chainId);
 
     const tokenMasterContract = new ethers.Contract(
       NETWORK_CONFIG[chainId.toString()].address,
       TOKENMASTER_CONTRACT_ABI,
       provider,
     );
+    setTokenMasterContract(tokenMasterContract);
 
     const totalOccasions = await tokenMasterContract.totalOccasions();
     const occasions: Occasion[] = [];
@@ -45,8 +47,6 @@ const Home = () => {
     }
 
     setOccasions(occasions);
-
-    console.log("occasions: ", occasions);
 
     (window as any).ethereum.on("accountsChanged", async () => {
       const accounts = await (window as any).ethereum.request({
@@ -75,7 +75,7 @@ const Home = () => {
 
       <Sort />
 
-      <div className='items-center w-65 max-w-550 h-75 mx-auto relative transition-all duration-250 ease'>
+      <div className='items-center max-w-7xl h-75 mx-auto relative transition-all duration-250 ease'>
         {occasions.map((occasion, index) => (
           <Card
             key={occasion.id.toString()}
@@ -87,6 +87,15 @@ const Home = () => {
           />
         ))}
       </div>
+
+      {toggle && (
+        <SeatChart
+          occasion={occasion!}
+          tokenMasterContract={tokenMasterContract!}
+          provider={provider!}
+          setToggle={setToggle}
+        />
+      )}
     </>
   );
 };
