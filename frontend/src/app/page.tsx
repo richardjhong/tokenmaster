@@ -30,7 +30,6 @@ const Home = () => {
     setProvider(provider);
 
     const { chainId } = await provider.getNetwork();
-    console.log("chainId: ", chainId);
 
     const tokenMasterContract = new ethers.Contract(
       NETWORK_CONFIG[chainId.toString()].address,
@@ -48,8 +47,6 @@ const Home = () => {
     }
 
     setOccasions(occasions);
-
-    console.log("occasions: ", occasions);
 
     (window as any).ethereum.on("accountsChanged", async () => {
       const accounts = await (window as any).ethereum.request({
@@ -78,7 +75,7 @@ const Home = () => {
 
       <Sort />
 
-      <div className='items-center w-65 max-w-550 h-75 mx-auto relative transition-all duration-250 ease'>
+      <div className='items-center max-w-7xl h-75 mx-auto relative transition-all duration-250 ease'>
         {occasions.map((occasion, index) => (
           <Card
             key={occasion.id.toString()}
