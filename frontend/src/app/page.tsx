@@ -89,15 +89,10 @@ const Home = () => {
         </h2>
       </header>
 
-      <Sort />
-      {contractOwnerConnected && (
-        <button
-          onClick={() => console.log("ready to work")}
-          className='col-span-3 row-span-2 place-self-center w-32 h-10 bg-light-blue text-white ml-auto border-none rounded-md font-open-sans text-base font-semibold cursor-pointer transition-all duration-250 ease bg-blue-600'
-        >
-          Owner
-        </button>
-      )}
+      <div className='items-center max-w-7xl h-75 mx-auto relative transition-all duration-250 ease'>
+        <Sort contractOwnerConnected={contractOwnerConnected}/>
+        
+      </div>
 
       <div className='items-center max-w-7xl h-75 mx-auto relative transition-all duration-250 ease'>
         {occasions.map((occasion, index) => (
