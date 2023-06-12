@@ -4,6 +4,7 @@ import { ethers, providers, BigNumber } from "ethers";
 import { useState, useEffect } from "react";
 import { NETWORK_CONFIG, TOKENMASTER_CONTRACT_ABI } from "../../constants";
 import { Card, Navbar, Sort, SeatChart, Modal } from "./components";
+import { modalOptions } from "@/utils/modalOptions";
 
 export interface Occasion {
   id: BigNumber;
@@ -14,11 +15,6 @@ export interface Occasion {
   date: string;
   time: string;
   location: string;
-}
-
-export enum modalOptions {
-  addEvent = "Add Event",
-  viewSeats = "View Seats",
 }
 
 const Home = () => {

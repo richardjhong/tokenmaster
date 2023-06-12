@@ -1,5 +1,5 @@
+import { modalOptions } from "@/utils/modalOptions";
 import React from "react";
-import { modalOptions } from "../page";
 
 const sortOptions = [
   "Select Your Genre",
