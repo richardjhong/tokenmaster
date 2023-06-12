@@ -100,7 +100,7 @@ const Home = () => {
 
   useEffect(() => {
     loadBlockchainData();
-  }, []);
+  }, [account]);
 
   useEffect(() => {
     const fetchContractOwner = async () => {
@@ -159,7 +159,7 @@ const Home = () => {
       <Modal
         isOpen={toggle}
         setToggle={setToggle}
-        occasion={occasion}
+        occasionName={occasion?.name || null}
         modalContent={modalContent}
       >
         {displayModalContent()}

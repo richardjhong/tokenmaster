@@ -4,7 +4,7 @@ import { Occasion } from "../page";
 interface ModalProps {
   isOpen: boolean;
   setToggle: (toggle: boolean) => void;
-  occasion: Occasion | null;
+  occasionName: string | null;
   modalContent: string;
   children: React.ReactNode;
 }
@@ -12,7 +12,7 @@ interface ModalProps {
 const Modal: React.FC<ModalProps> = ({
   isOpen,
   setToggle,
-  occasion,
+  occasionName,
   modalContent,
   children,
 }) => {
@@ -24,7 +24,7 @@ const Modal: React.FC<ModalProps> = ({
         <div className='col-span-full text-center self-center text-white font-light'>
           <div className='col-span-25'>
             {modalContent === 'View Seats' ? (
-              <h1 className='font-bold'>{occasion!.name} Seating Map</h1>
+              <h1 className='font-bold'>{occasionName} Seating Map</h1>
             ) : (
               <h1>New Event</h1>
             )}
