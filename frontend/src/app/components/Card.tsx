@@ -1,5 +1,6 @@
 import { ethers, utils } from "ethers";
-import { Occasion, modalOptions } from "../page";
+import { Occasion } from "../page";
+import { modalOptions } from "@/utils/modalOptions";
 
 interface CardProps {
   id: number;
