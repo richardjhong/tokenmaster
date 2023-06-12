@@ -3,7 +3,7 @@
 import { ethers, providers, BigNumber } from "ethers";
 import { useState, useEffect } from "react";
 import { NETWORK_CONFIG, TOKENMASTER_CONTRACT_ABI } from "../../constants";
-import { Card, Navbar, Sort, SeatChart } from "./components";
+import { Card, Navbar, Sort, SeatChart, Modal } from "./components";
 
 export interface Occasion {
   id: BigNumber;
@@ -14,6 +14,11 @@ export interface Occasion {
   date: string;
   time: string;
   location: string;
+}
+
+export enum modalOptions {
+  addEvent = "Add Event",
+  viewSeats = "View Seats",
 }
 
 const Home = () => {
@@ -27,6 +32,9 @@ const Home = () => {
   const [contractOwnerConnected, setContractOwnerConnected] =
     useState<boolean>(false);
   const [contractBalance, setContractBalance] = useState<string>("0");
+  const [modalContent, setModalContent] = useState<modalOptions>(
+    modalOptions.addEvent,
+  );
 
   const loadBlockchainData = async () => {
     const provider = new providers.Web3Provider((window as any).ethereum);
@@ -70,9 +78,29 @@ const Home = () => {
     }
   };
 
+  const displayModalContent = () => {
+    switch (modalContent) {
+      case modalOptions.viewSeats:
+        return (
+          <SeatChart
+            occasion={occasion!}
+            tokenMasterContract={tokenMasterContract!}
+            provider={provider!}
+            setToggle={setToggle}
+            fetchBalance={fetchBalance}
+          />
+        );
+      case modalOptions.addEvent:
+        return <div>Testing adding event</div>;
+
+      default:
+        return;
+    }
+  };
+
   useEffect(() => {
     loadBlockchainData();
-  }, []);
+  }, [account]);
 
   useEffect(() => {
     const fetchContractOwner = async () => {
@@ -96,17 +124,22 @@ const Home = () => {
           setAccount={setAccount}
         />
         <div className='absolute bottom-5 left-20 text-white text-2xl sm:text-5xl md:text-3xl font-light'>
-          <h2>
-            <strong>Event</strong> Tickets
-          </h2>
           {contractOwnerConnected && (
             <h3>Contract Balance: {contractBalance} ETH</h3>
           )}
+          <h2>
+            <strong>Event</strong> Tickets
+          </h2>
         </div>
       </header>
 
       <div className='items-center max-w-7xl h-75 mx-auto relative transition-all duration-250 ease'>
-        <Sort contractOwnerConnected={contractOwnerConnected} />
+        <Sort
+          contractOwnerConnected={contractOwnerConnected}
+          setModalContent={setModalContent}
+          toggle={toggle}
+          setToggle={setToggle}
+        />
       </div>
 
       <div className='items-center max-w-7xl h-75 mx-auto relative transition-all duration-250 ease'>
@@ -118,19 +151,19 @@ const Home = () => {
             toggle={toggle}
             setToggle={setToggle}
             setOccasion={setOccasion}
+            setModalContent={setModalContent}
           />
         ))}
       </div>
 
-      {toggle && (
-        <SeatChart
-          occasion={occasion!}
-          tokenMasterContract={tokenMasterContract!}
-          provider={provider!}
-          setToggle={setToggle}
-          fetchBalance={fetchBalance}
-        />
-      )}
+      <Modal
+        isOpen={toggle}
+        setToggle={setToggle}
+        occasionName={occasion?.name || null}
+        modalContent={modalContent}
+      >
+        {displayModalContent()}
+      </Modal>
     </>
   );
 };

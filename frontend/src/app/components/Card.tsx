@@ -1,5 +1,5 @@
 import { ethers, utils } from "ethers";
-import { Occasion } from "../page";
+import { Occasion, modalOptions } from "../page";
 
 interface CardProps {
   id: number;
@@ -7,6 +7,7 @@ interface CardProps {
   toggle: any;
   setToggle: (toggle: boolean) => void;
   setOccasion: (occasion: Occasion) => void;
+  setModalContent: (viewSeats: modalOptions.viewSeats) => void;
 }
 
 const Card: React.FC<CardProps> = ({
@@ -14,9 +15,11 @@ const Card: React.FC<CardProps> = ({
   toggle,
   setToggle,
   setOccasion,
+  setModalContent
 }) => {
   const togglePop = () => {
     setOccasion(occasion);
+    setModalContent(modalOptions.viewSeats)
     toggle ? setToggle(false) : setToggle(true);
   };
 
