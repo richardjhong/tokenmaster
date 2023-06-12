@@ -1,4 +1,5 @@
 import React from "react";
+import { modalOptions } from "../page";
 
 const sortOptions = [
   "Select Your Genre",
@@ -8,9 +9,17 @@ const sortOptions = [
 
 interface SortProps {
   contractOwnerConnected: boolean;
+  setModalContent: (addEvent: modalOptions.addEvent) => void;
+  toggle: any;
+  setToggle: (toggle: boolean) => void;
 }
 
-const Sort: React.FC<SortProps> = ({ contractOwnerConnected }) => {
+const Sort: React.FC<SortProps> = ({ contractOwnerConnected, setModalContent, toggle, setToggle }) => {
+  const togglePop = () => {
+    setModalContent(modalOptions.addEvent)
+    toggle ? setToggle(false) : setToggle(true);
+  }
+
   return (
     <div className='grid grid-cols-12 grid-rows-2 h-full p-10 text-left transition duration-250 ease hover:bg-stone-200 bg-opacity-20'>
       {sortOptions.map((option, index) => (
@@ -29,7 +38,7 @@ const Sort: React.FC<SortProps> = ({ contractOwnerConnected }) => {
       {contractOwnerConnected && (
         <button
           type='button'
-          onClick={() => console.log("ready to work")}
+          onClick={() => togglePop()}
           className='col-span-3 row-span-2 place-self-center w-32 h-10 bg-light-blue text-white ml-auto border-none rounded-md font-open-sans text-base font-semibold cursor-pointer transition-all duration-250 ease bg-blue-600'
         >
           Add Event
