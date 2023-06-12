@@ -3,7 +3,14 @@
 import { ethers, providers, BigNumber } from "ethers";
 import { useState, useEffect } from "react";
 import { NETWORK_CONFIG, TOKENMASTER_CONTRACT_ABI } from "../../constants";
-import { Card, Navbar, Sort, SeatChart, Modal } from "./components";
+import {
+  Card,
+  Navbar,
+  Sort,
+  SeatChart,
+  Modal,
+  CreateEvent,
+} from "./components";
 import { modalOptions } from "@/utils/modalOptions";
 
 export interface Occasion {
@@ -87,7 +94,12 @@ const Home = () => {
           />
         );
       case modalOptions.addEvent:
-        return <div>Testing adding event</div>;
+        return (
+          <CreateEvent
+            tokenMasterContract={tokenMasterContract!}
+            provider={provider!}
+          />
+        );
 
       default:
         return;
