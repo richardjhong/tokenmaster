@@ -46,7 +46,7 @@ const Modal: React.FC<ModalProps> = ({
         className='grid gap-5 grid-cols-27 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gradient-to-b from-blue-900 to-white bg-opacity-75 border-10 border-gray-500 rounded-2xl p-20 h-85 overflow-x-auto'
         ref={modalRef}
       >
-        <div className='col-span-full text-center self-center text-white font-light'>
+        <div className='row-start-1 col-span-full text-center self-center text-white font-light'>
           <div className='col-span-25'>
             {modalContent === "View Seats" ? (
               <h1 className='font-bold'>{occasionName} Seating Map</h1>
