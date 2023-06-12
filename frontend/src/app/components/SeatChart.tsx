@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState, useEffect } from "react";
 import { ethers, providers } from "ethers";
 import Seat from "./Seat";
@@ -10,6 +8,7 @@ interface SeatChartProps {
   tokenMasterContract: ethers.Contract;
   provider: providers.Web3Provider;
   setToggle: (toggle: boolean) => void;
+  fetchBalance: () => void;
 }
 
 const SeatChart: React.FC<SeatChartProps> = ({
@@ -17,6 +16,7 @@ const SeatChart: React.FC<SeatChartProps> = ({
   tokenMasterContract,
   provider,
   setToggle,
+  fetchBalance
 }) => {
   const [seatsTaken, setSeatsTaken] = useState<boolean>(false);
   const [hasSold, setHasSold] = useState<boolean>(false);
@@ -36,6 +36,8 @@ const SeatChart: React.FC<SeatChartProps> = ({
     await tx.wait();
 
     setHasSold(true);
+
+    await fetchBalance();
   };
 
   useEffect(() => {

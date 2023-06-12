@@ -26,6 +26,7 @@ const Home = () => {
     useState<ethers.Contract | null>(null);
   const [contractOwnerConnected, setContractOwnerConnected] =
     useState<boolean>(false);
+  const [contractBalance, setContractBalance] = useState<string>("0");
 
   const loadBlockchainData = async () => {
     const provider = new providers.Web3Provider((window as any).ethereum);
@@ -39,6 +40,8 @@ const Home = () => {
       provider,
     );
     setTokenMasterContract(tokenMasterContract);
+
+    await fetchBalance();
 
     const totalOccasions = await tokenMasterContract.totalOccasions();
     const occasions: Occasion[] = [];
@@ -57,6 +60,14 @@ const Home = () => {
       const account = ethers.utils.getAddress(accounts[0]);
       setAccount(account);
     });
+  };
+
+  const fetchBalance = async () => {
+    if (tokenMasterContract && provider) {
+      const balance = await provider.getBalance(tokenMasterContract.address);
+      const formattedBalance = ethers.utils.formatEther(balance);
+      setContractBalance(formattedBalance);
+    }
   };
 
   useEffect(() => {
@@ -84,14 +95,18 @@ const Home = () => {
           account={account}
           setAccount={setAccount}
         />
-        <h2 className='absolute bottom-5 left-20 text-white text-2xl sm:text-5xl md:text-3xl font-light'>
-          <strong>Event</strong> Tickets
-        </h2>
+        <div className='absolute bottom-5 left-20 text-white text-2xl sm:text-5xl md:text-3xl font-light'>
+          <h2>
+            <strong>Event</strong> Tickets
+          </h2>
+          {contractOwnerConnected && (
+            <h3>Contract Balance: {contractBalance} ETH</h3>
+          )}
+        </div>
       </header>
 
       <div className='items-center max-w-7xl h-75 mx-auto relative transition-all duration-250 ease'>
-        <Sort contractOwnerConnected={contractOwnerConnected}/>
-        
+        <Sort contractOwnerConnected={contractOwnerConnected} />
       </div>
 
       <div className='items-center max-w-7xl h-75 mx-auto relative transition-all duration-250 ease'>
@@ -113,6 +128,7 @@ const Home = () => {
           tokenMasterContract={tokenMasterContract!}
           provider={provider!}
           setToggle={setToggle}
+          fetchBalance={fetchBalance}
         />
       )}
     </>
