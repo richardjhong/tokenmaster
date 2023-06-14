@@ -85,6 +85,23 @@ describe("TokenMaster", () => {
           )
       ).to.be.revertedWith("Only the contract owner can call this");
     });
+
+    it("Should emit an OccasionCreated event with the index of the newly listed occasion", async () => {
+      await expect(
+        tokenMaster
+          .connect(deployer)
+          .list(
+            OCCASION_NAME,
+            OCCASION_COST,
+            OCCASION_MAX_TICKETS,
+            OCCASION_DATE,
+            OCCASION_TIME,
+            OCCASION_LOCATION
+          )
+      )
+        .to.emit(tokenMaster, "OccasionCreated")
+        .withArgs(await tokenMaster.totalOccasions());
+    });
   });
 
   describe("Minting", () => {
