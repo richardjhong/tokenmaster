@@ -38,6 +38,8 @@ const Home = () => {
   const [modalContent, setModalContent] = useState<modalOptions>(
     modalOptions.addEvent,
   );
+  const [contractListenerAdded, setContractListenerAdded] =
+    useState<boolean>(false);
 
   const loadBlockchainData = async () => {
     const provider = new providers.Web3Provider((window as any).ethereum);
@@ -109,6 +111,16 @@ const Home = () => {
   useEffect(() => {
     loadBlockchainData();
   }, [account]);
+
+  useEffect(() => {
+    if (tokenMasterContract && !contractListenerAdded) {
+      tokenMasterContract.on("OccasionCreated", async (occasionId) => {
+        const occasion: Occasion = await tokenMasterContract.getOccasion(occasionId);
+        setOccasions((prevOccasions) => [...prevOccasions, occasion]);
+      });
+      setContractListenerAdded(true);
+    }
+  }, [tokenMasterContract, contractListenerAdded]);
 
   useEffect(() => {
     const fetchContractOwner = async () => {

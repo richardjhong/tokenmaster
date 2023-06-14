@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Occasion } from "../page";
-import { ethers, providers, BigNumber } from "ethers";
+import { ethers, providers } from "ethers";
+import CircularProgress from "@mui/material/CircularProgress";
 
 interface CreateEventProps {
   tokenMasterContract: ethers.Contract;
@@ -21,6 +21,7 @@ const CreateEvent: React.FC<CreateEventProps> = ({
   });
 
   const [disabled, setDisabled] = useState<boolean>(true);
+  const [loadingTx, setLoadingTx] = useState<boolean>(false);
 
   useEffect(() => {
     inputs.name &&
@@ -42,24 +43,28 @@ const CreateEvent: React.FC<CreateEventProps> = ({
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("testing", inputs);
 
-    const signer = await provider.getSigner();
-    console.log("signer: ", signer);
+    try {
+      const signer = await provider.getSigner();
 
-    const tx = await tokenMasterContract
-      .connect(signer)
-      .list(
-        inputs.name,
-        ethers.utils.parseUnits(inputs.cost, "ether"),
-        parseInt(inputs.tickets),
-        inputs.date,
-        inputs.time,
-        inputs.location,
-      );
-    await tx.wait();
+      setLoadingTx(true);
+      const tx = await tokenMasterContract
+        .connect(signer)
+        .list(
+          inputs.name,
+          ethers.utils.parseUnits(inputs.cost, "ether"),
+          parseInt(inputs.tickets),
+          inputs.date,
+          inputs.time,
+          inputs.location,
+        );
+      await tx.wait();
 
-    console.log("added new event");
+      setLoadingTx(false);
+    } catch (err) {
+      setLoadingTx(false);
+      console.error(err);
+    }
   };
 
   return (
@@ -119,13 +124,12 @@ const CreateEvent: React.FC<CreateEventProps> = ({
         onChange={handleChangeInput}
       />
 
-      {/* Add form submit button or any additional form content */}
       <button
-        className='row-start-6 col-span-3 row-span-2 place-self-center w-32 h-10 bg-light-blue text-white ml-auto border-none rounded-md font-open-sans text-base font-semibold cursor-pointer transition-all duration-250 ease bg-red-600 disabled:bg-gray-400'
+        className='row-start-6 col-span-3 row-span-2 place-self-center w-32 h-12 bg-light-blue text-white ml-auto border-none rounded-md font-open-sans text-base font-semibold cursor-pointer transition-all duration-250 ease bg-blue-700 disabled:bg-gray-400'
         type='submit'
         disabled={disabled}
       >
-        Submit
+        {loadingTx ? <CircularProgress color='inherit' /> : "Create Event"}
       </button>
     </form>
   );

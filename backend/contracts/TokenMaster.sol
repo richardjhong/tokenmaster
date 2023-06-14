@@ -26,6 +26,8 @@ contract TokenMaster is ERC721 {
   mapping(uint256 => mapping(uint256 => address)) public seatTaken;
   mapping(uint256 => uint256[]) seatsTaken;
 
+  event OccasionCreated(uint256 indexed latestOccasionIndex);
+
   modifier onlyOwner() {
     require(msg.sender == owner, "Only the contract owner can call this");
     _;
@@ -52,7 +54,7 @@ contract TokenMaster is ERC721 {
     string memory _location
   ) public onlyOwner {
     totalOccasions++;
-    occasions[totalOccasions] = Occasion(
+    Occasion memory newOccasion = Occasion(
       totalOccasions,
       _name,
       _cost,
@@ -62,6 +64,8 @@ contract TokenMaster is ERC721 {
       _time,
       _location
     );
+    occasions[totalOccasions] = newOccasion;
+    emit OccasionCreated(totalOccasions);
   }
 
   /// @notice mint uses ERC721 to safely mint a new token after going through validation and upkeep of storage variables

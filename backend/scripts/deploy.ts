@@ -1,4 +1,4 @@
-import { ethers } from "hardhat";
+import hre, { ethers, run } from "hardhat";
 
 const tokens = (n: number) => {
   return ethers.utils.parseUnits(n.toString(), "ether");
@@ -52,6 +52,7 @@ const main = async () => {
   const [deployer] = await ethers.getSigners();
   const NAME = "TokenMaster";
   const SYMBOL = "TM";
+  const chain = hre.hardhatArguments.network;
 
   // Deploy contract
   const TokenMaster = await ethers.getContractFactory("TokenMaster");
@@ -59,6 +60,16 @@ const main = async () => {
   await tokenMaster.deployed();
 
   console.log(`TokenMaster Contract deployed at: ${tokenMaster.address}\n`);
+
+  if (chain === "sepolia") {
+    console.log("Sleeping...");
+    await sleep(40000);
+
+    await run("verify:verify", {
+      address: tokenMaster.address,
+      constructorArguments: [NAME, SYMBOL],
+    });
+  }
 
   for (const [index, occasion] of occasions.entries()) {
     const tx = await tokenMaster
@@ -75,6 +86,10 @@ const main = async () => {
     await tx.wait();
     console.log(`Listed Event: ${index + 1}: ${occasion.name}`);
   }
+};
+
+const sleep = (ms: number) => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 };
 
 main()
