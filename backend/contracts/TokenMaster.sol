@@ -54,7 +54,7 @@ contract TokenMaster is ERC721 {
     string memory _location
   ) public onlyOwner {
     totalOccasions++;
-    Occasion memory newOccasion = Occasion(
+    occasions[totalOccasions] = Occasion(
       totalOccasions,
       _name,
       _cost,
@@ -64,7 +64,6 @@ contract TokenMaster is ERC721 {
       _time,
       _location
     );
-    occasions[totalOccasions] = newOccasion;
     emit OccasionCreated(totalOccasions);
   }
 
