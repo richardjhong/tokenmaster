@@ -5,8 +5,8 @@ export const NETWORK_CONFIG: { [key: string]: { address: string } } = {
   },
   // sepolia
   "11155111": {
-    address: "0x061B7d1c4190A14E14D19cf7CE73cAA397234596"
-  }
+    address: "0x72629fEfd2Dd5b6C1426364847eD90C2148a5E52",
+  },
 };
 
 export const TOKENMASTER_CONTRACT_ABI = [
@@ -74,6 +74,19 @@ export const TOKENMASTER_CONTRACT_ABI = [
       },
     ],
     name: "ApprovalForAll",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "uint256",
+        name: "latestOccasionIndex",
+        type: "uint256",
+      },
+    ],
+    name: "OccasionCreated",
     type: "event",
   },
   {
