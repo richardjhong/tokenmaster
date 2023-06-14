@@ -5,7 +5,7 @@ export const NETWORK_CONFIG: { [key: string]: { address: string } } = {
   },
   // sepolia
   "11155111": {
-    address: "0x72629fEfd2Dd5b6C1426364847eD90C2148a5E52",
+    address: "0xcB342B0eb3AA8cAdd4cC883E42805a813B3aEBDB",
   },
 };
 
