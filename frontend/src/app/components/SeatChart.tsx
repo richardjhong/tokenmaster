@@ -62,11 +62,11 @@ const SeatChart: React.FC<SeatChartProps> = ({
         <strong className='font-bold'>STAGE</strong>
       </div>
 
-      <div className='col-start-6 rotate-90 border-1 border-black bg-gray-500'>
+      <div className='col-start-6 rotate-90 border-1 border-black'>
         <strong className='font-bold'>WALKWAY</strong>
       </div>
 
-      <div className='col-start-22 rotate-90 border-1 border-black bg-gray-500'>
+      <div className='col-start-22 rotate-90 border-1 border-black'>
         <strong className='font-bold'>WALKWAY</strong>
       </div>
 

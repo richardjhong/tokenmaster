@@ -19,18 +19,20 @@ const Navbar: React.FC<NavbarProps> = ({ account, setAccount }) => {
   return (
     <nav className='grid grid-cols-4 items-center'>
       <div className='flex items-center px-75 grid-col-span-3 h-65'>
-        <h1 className='text-white text-1.50em italic mr-10'>tokenMaster</h1>
+        <h1 className='text-white text-1.50em italic ml-1 mr-10'>
+          tokenMaster
+        </h1>
         <input
           type='text'
           placeholder='Find millions of experiences'
-          className='bg-white bg-opacity-20 bg-no-repeat bg-center text-white h-35 border-none rounded-md mx-5 pl-2 placeholder-white font-open-sans'
+          className='bg-white bg-opacity-20 bg-no-repeat bg-center text-white h-35 border-none rounded-md mx-5 pl-2 placeholder-white font-open-sans w-60'
         />
 
-        <ul className='nav__links flex justify-center items-center h-full list-none'>
+        <ul className='flex justify-center items-center h-full list-none'>
           <li className='h-full min-w-60'>
             <Link
               href=''
-              className='flex justify-center items-center flex-wrap h-full px-10 text-white font-semibold no-underline hover:bg-blue-700 bg-opacity-30'
+              className='flex justify-center items-center flex-wrap h-full px-8 text-white font-semibold no-underline hover:bg-blue-700 bg-opacity-30'
             >
               Concerts
             </Link>
@@ -38,7 +40,7 @@ const Navbar: React.FC<NavbarProps> = ({ account, setAccount }) => {
           <li className='h-full min-w-60'>
             <Link
               href=''
-              className='flex justify-center items-center flex-wrap h-full px-10 text-white font-semibold no-underline hover:bg-blue-700 bg-opacity-30'
+              className='flex justify-center items-center flex-wrap h-full px-8 text-white font-semibold no-underline hover:bg-blue-700 bg-opacity-30'
             >
               Sports
             </Link>
@@ -46,7 +48,7 @@ const Navbar: React.FC<NavbarProps> = ({ account, setAccount }) => {
           <li className='h-full min-w-60'>
             <Link
               href=''
-              className='flex justify-center items-center flex-wrap h-full px-10 text-white font-semibold no-underline hover:bg-blue-700 bg-opacity-30'
+              className='flex justify-center items-center flex-wrap h-full px-8 text-white font-semibold no-underline hover:bg-blue-700 bg-opacity-30'
             >
               Arts & Theater
             </Link>
@@ -54,7 +56,7 @@ const Navbar: React.FC<NavbarProps> = ({ account, setAccount }) => {
           <li className='h-full min-w-60'>
             <Link
               href=''
-              className='flex justify-center items-center flex-wrap h-full px-10 text-white font-semibold no-underline hover:bg-blue-700 bg-opacity-30'
+              className='flex justify-center items-center flex-wrap h-full px-8 text-white font-semibold no-underline hover:bg-blue-700 bg-opacity-30'
             >
               More
             </Link>
