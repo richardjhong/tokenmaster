@@ -21,11 +21,11 @@ const Sort: React.FC<SortProps> = ({ contractOwnerConnected, setModalContent, to
   }
 
   return (
-    <div className='grid grid-cols-12 grid-rows-2 h-full p-10 text-left transition duration-250 ease hover:bg-stone-200 bg-opacity-20'>
+    <div className='grid grid-cols-12 grid-rows-2 h-full p-10 text-left transition duration-250 ease  bg-opacity-20'>
       {sortOptions.map((option, index) => (
         <div
           key={index}
-          className='col-span-3 w-52 h-10 mx-1 my-6 border-2 row-span-2 place-self-center border-black flex justify-between items-center cursor-pointer hover:border-blue-400'
+          className={`md:col-span-full lg:col-span-3 md:row-start-${index} w-52 h-10 mx-1 my-6 border-2 row-span-2 place-self-center border-black flex justify-between items-center cursor-pointer hover:border-blue-400`}
         >
           <p className='ml-2 text-sm md:text-base'>{option}</p>
           <img
@@ -39,7 +39,7 @@ const Sort: React.FC<SortProps> = ({ contractOwnerConnected, setModalContent, to
         <button
           type='button'
           onClick={() => togglePop()}
-          className='col-span-3 row-span-2 place-self-center w-32 h-10 bg-light-blue text-white ml-auto border-none rounded-md font-open-sans text-base font-semibold cursor-pointer transition-all duration-250 ease bg-blue-600'
+          className='md:col-span-full lg:col-span-3 row-span-2 place-self-center w-32 h-10 bg-light-blue text-white ml-auto border-none rounded-md font-open-sans text-base font-semibold cursor-pointer transition-all duration-250 ease bg-blue-600'
         >
           Add Event
         </button>

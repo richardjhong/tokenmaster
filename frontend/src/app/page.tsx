@@ -1,6 +1,7 @@
 "use client";
 
 import { ethers, providers, BigNumber } from "ethers";
+import { createPublicClient, createWalletClient, custom, http } from "viem";
 import { useState, useEffect } from "react";
 import { NETWORK_CONFIG, TOKENMASTER_CONTRACT_ABI } from "../../constants";
 import {
@@ -12,6 +13,10 @@ import {
   CreateEvent,
 } from "./components";
 import { modalOptions } from "@/utils/modalOptions";
+// import { localhost, sepolia } from "viem/chains";
+import { configureChains, createConfig } from "wagmi";
+import { localhost } from "wagmi/chains";
+import { publicProvider } from "wagmi/providers/public";
 
 export interface Occasion {
   id: BigNumber;
@@ -43,6 +48,18 @@ const Home = () => {
 
   const loadBlockchainData = async () => {
     const provider = new providers.Web3Provider((window as any).ethereum);
+
+    const { chains, publicClient, webSocketPublicClient } = configureChains(
+      [localhost],
+      [publicProvider()],
+    );
+
+    const config = createConfig({
+      autoConnect: true,
+      publicClient,
+      webSocketPublicClient,
+    });
+
     setProvider(provider);
 
     const { chainId } = await provider.getNetwork();
@@ -115,7 +132,9 @@ const Home = () => {
   useEffect(() => {
     if (tokenMasterContract && !contractListenerAdded) {
       tokenMasterContract.on("OccasionCreated", async (occasionId) => {
-        const occasion: Occasion = await tokenMasterContract.getOccasion(occasionId);
+        const occasion: Occasion = await tokenMasterContract.getOccasion(
+          occasionId,
+        );
         setOccasions((prevOccasions) => [...prevOccasions, occasion]);
       });
       setContractListenerAdded(true);
