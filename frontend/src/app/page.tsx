@@ -1,9 +1,22 @@
 "use client";
 
-import { ethers, providers, BigNumber } from "ethers";
-import { createPublicClient, createWalletClient, custom, http } from "viem";
+import { ethers, providers } from "ethers";
+import {
+  createPublicClient,
+  createWalletClient,
+  custom,
+  getAddress,
+  isAddressEqual,
+} from "viem";
 import { useState, useEffect } from "react";
-import { NETWORK_CONFIG, TOKENMASTER_CONTRACT_ABI } from "../../constants";
+import {
+  NETWORK_CONFIG,
+  NetworkOptions,
+  NetworkOption,
+  networkChain,
+  NetworkName,
+  TOKENMASTER_CONTRACT_ABI,
+} from "../../constants";
 import {
   Card,
   Navbar,
@@ -13,17 +26,14 @@ import {
   CreateEvent,
 } from "./components";
 import { modalOptions } from "@/utils/modalOptions";
-// import { localhost, sepolia } from "viem/chains";
-import { configureChains, createConfig } from "wagmi";
-import { localhost } from "wagmi/chains";
-import { publicProvider } from "wagmi/providers/public";
+import { localhost, sepolia } from "wagmi/chains";
 
 export interface Occasion {
-  id: BigNumber;
+  id: bigint;
   name: string;
-  cost: BigNumber;
-  tickets: BigNumber;
-  maxTickets: BigNumber;
+  cost: bigint;
+  tickets: bigint;
+  maxTickets: bigint;
   date: string;
   time: string;
   location: string;
@@ -32,6 +42,8 @@ export interface Occasion {
 const Home = () => {
   const [account, setAccount] = useState<string | null>(null);
   const [provider, setProvider] = useState<providers.Web3Provider | null>(null);
+  const [publicClient, setPublicClient] = useState<any | null>(null);
+  const [walletClient, setWalletClient] = useState<any | null>(null);
   const [occasions, setOccasions] = useState<Occasion[]>([]);
   const [occasion, setOccasion] = useState<Occasion | null>(null);
   const [toggle, setToggle] = useState<boolean>(false);
@@ -46,19 +58,44 @@ const Home = () => {
   const [contractListenerAdded, setContractListenerAdded] =
     useState<boolean>(false);
 
+  const mappedNetworkChain = (chainId: NetworkOption) => {
+    switch (networkChain[chainId]) {
+      case NetworkName.LOCALHOST:
+        return localhost;
+      case NetworkName.SEPOLIA:
+        return sepolia;
+      default:
+        return;
+    }
+  };
+
   const loadBlockchainData = async () => {
     const provider = new providers.Web3Provider((window as any).ethereum);
 
-    const { chains, publicClient, webSocketPublicClient } = configureChains(
-      [localhost],
-      [publicProvider()],
-    );
+    console.log("chain: ", (window as any).ethereum.chainId);
 
-    const config = createConfig({
-      autoConnect: true,
-      publicClient,
-      webSocketPublicClient,
+    const chainId2 = (window as any).ethereum.chainId as NetworkOption;
+
+    const publicClient = createPublicClient({
+      chain: mappedNetworkChain(chainId2),
+      transport: custom((window as any).ethereum),
     });
+
+    setPublicClient(publicClient);
+
+    const walletClient = createWalletClient({
+      chain: mappedNetworkChain(chainId2),
+      transport: custom((window as any).ethereum),
+    });
+
+    setWalletClient(walletClient);
+
+    const [address] = await walletClient.getAddresses();
+
+    const wagmiContractConfig = {
+      abi: TOKENMASTER_CONTRACT_ABI,
+      address: NetworkOptions[networkChain[chainId2]] as `0x${string}`,
+    };
 
     setProvider(provider);
 
@@ -71,14 +108,20 @@ const Home = () => {
     );
     setTokenMasterContract(tokenMasterContract);
 
-    await fetchBalance();
+    const supply = (await publicClient.readContract({
+      ...wagmiContractConfig,
+      functionName: "totalOccasions",
+    })) as bigint;
 
-    const totalOccasions = await tokenMasterContract.totalOccasions();
     const occasions: Occasion[] = [];
 
-    for (let i = 1; i <= totalOccasions; i++) {
-      const singleOccasion = await tokenMasterContract.getOccasion(i);
-      occasions.push(singleOccasion);
+    for (let i = 1n; i <= Number(supply); i++) {
+      const singleOccasion = await publicClient.readContract({
+        ...wagmiContractConfig,
+        functionName: "getOccasion",
+        args: [i],
+      });
+      occasions.push(singleOccasion as Occasion);
     }
 
     setOccasions(occasions);
@@ -87,7 +130,7 @@ const Home = () => {
       const accounts = await (window as any).ethereum.request({
         method: "eth_requestAccounts",
       });
-      const account = ethers.utils.getAddress(accounts[0]);
+      const account = getAddress(accounts[0]);
       setAccount(account);
     });
   };
@@ -143,10 +186,20 @@ const Home = () => {
 
   useEffect(() => {
     const fetchContractOwner = async () => {
-      if (tokenMasterContract) {
-        const contractOwner = await tokenMasterContract.owner();
+      if (publicClient && account !== null) {
+        const chainId2 = (window as any).ethereum.chainId as NetworkOption;
 
-        contractOwner === account
+        const wagmiContractConfig = {
+          abi: TOKENMASTER_CONTRACT_ABI,
+          address: NetworkOptions[networkChain[chainId2]] as `0x${string}`,
+        };
+        // const contractOwner = await tokenMasterContract.owner();
+        const contractOwner = await publicClient.readContract({
+          ...wagmiContractConfig,
+          functionName: "owner",
+        });
+
+        isAddressEqual(contractOwner, account as `0x${string}`)
           ? setContractOwnerConnected(true)
           : setContractOwnerConnected(false);
       }

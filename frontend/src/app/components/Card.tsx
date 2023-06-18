@@ -1,6 +1,6 @@
-import { ethers, utils } from "ethers";
 import { Occasion } from "../page";
 import { modalOptions } from "@/utils/modalOptions";
+import { formatUnits } from "viem";
 
 interface CardProps {
   id: number;
@@ -37,7 +37,7 @@ const Card: React.FC<CardProps> = ({
         </p>
         <div className='col-span-1 row-span-2 self-center text-base sm:text-3xl font-light'>
           <p className="font-semibold">
-            {utils.formatUnits(occasion.cost.toString(), "ether")}
+            {formatUnits(occasion.cost, 18)}
           </p>{" "}
           ETH
         </div>
