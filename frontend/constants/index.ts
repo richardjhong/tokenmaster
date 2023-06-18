@@ -9,6 +9,23 @@ export const NETWORK_CONFIG: { [key: string]: { address: string } } = {
   },
 };
 
+export enum NetworkName {
+  LOCALHOST = "localhost",
+  SEPOLIA = "sepolia",
+}
+
+export const networkChain = {
+  "0x7a69": NetworkName.LOCALHOST,
+  "0xaa36a7": NetworkName.SEPOLIA,
+};
+
+export type NetworkOption = keyof typeof networkChain;
+
+export const NetworkOptions = {
+  [NetworkName.LOCALHOST]: "0x5FbDB2315678afecb367f032d93F642f64180aa3", 
+  [NetworkName.SEPOLIA]: "0xcB342B0eb3AA8cAdd4cC883E42805a813B3aEBDB", 
+}
+
 export const TOKENMASTER_CONTRACT_ABI = [
   {
     inputs: [
