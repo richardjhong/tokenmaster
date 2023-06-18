@@ -70,22 +70,22 @@ const Home = () => {
   };
 
   const loadBlockchainData = async () => {
-    const provider = new providers.Web3Provider((window as any).ethereum);
+    const provider = new providers.Web3Provider(window.ethereum);
 
-    console.log("chain: ", (window as any).ethereum.chainId);
+    console.log("chain: ", window.ethereum.chainId);
 
-    const chainId2 = (window as any).ethereum.chainId as NetworkOption;
+    const chainId2 = window.ethereum.chainId as NetworkOption;
 
     const publicClient = createPublicClient({
       chain: mappedNetworkChain(chainId2),
-      transport: custom((window as any).ethereum),
+      transport: custom(window.ethereum),
     });
 
     setPublicClient(publicClient);
 
     const walletClient = createWalletClient({
       chain: mappedNetworkChain(chainId2),
-      transport: custom((window as any).ethereum),
+      transport: custom(window.ethereum),
     });
 
     setWalletClient(walletClient);
@@ -126,8 +126,8 @@ const Home = () => {
 
     setOccasions(occasions);
 
-    (window as any).ethereum.on("accountsChanged", async () => {
-      const accounts = await (window as any).ethereum.request({
+    window.ethereum.on("accountsChanged", async () => {
+      const accounts = await window.ethereum.request({
         method: "eth_requestAccounts",
       });
       const account = getAddress(accounts[0]);
@@ -187,7 +187,7 @@ const Home = () => {
   useEffect(() => {
     const fetchContractOwner = async () => {
       if (publicClient && account !== null) {
-        const chainId2 = (window as any).ethereum.chainId as NetworkOption;
+        const chainId2 = window.ethereum.chainId as NetworkOption;
 
         const wagmiContractConfig = {
           abi: TOKENMASTER_CONTRACT_ABI,
