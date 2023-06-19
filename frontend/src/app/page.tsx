@@ -2,6 +2,7 @@
 
 import { ethers, providers } from "ethers";
 import {
+  Address,
   createPublicClient,
   createWalletClient,
   custom,
@@ -10,11 +11,9 @@ import {
 } from "viem";
 import { useState, useEffect } from "react";
 import {
-  NETWORK_CONFIG,
   NetworkOptions,
   NetworkOption,
   networkChain,
-  NetworkName,
   TOKENMASTER_CONTRACT_ABI,
 } from "../../constants";
 import {
@@ -26,7 +25,8 @@ import {
   CreateEvent,
 } from "./components";
 import { modalOptions } from "@/utils/modalOptions";
-import { localhost, sepolia } from "wagmi/chains";
+import { localhost, sepolia } from "viem/chains";
+import useLoadBlockchainData from "@/utils/useLoadBlockchainData";
 
 export interface Occasion {
   id: bigint;
@@ -40,11 +40,10 @@ export interface Occasion {
 }
 
 const Home = () => {
-  const [account, setAccount] = useState<string | null>(null);
+  const [account, setAccount] = useState<Address | null>(null);
   const [provider, setProvider] = useState<providers.Web3Provider | null>(null);
   const [publicClient, setPublicClient] = useState<any | null>(null);
   const [walletClient, setWalletClient] = useState<any | null>(null);
-  const [occasions, setOccasions] = useState<Occasion[]>([]);
   const [occasion, setOccasion] = useState<Occasion | null>(null);
   const [toggle, setToggle] = useState<boolean>(false);
   const [tokenMasterContract, setTokenMasterContract] =
@@ -58,76 +57,75 @@ const Home = () => {
   const [contractListenerAdded, setContractListenerAdded] =
     useState<boolean>(false);
 
-  const mappedNetworkChain = (chainId: NetworkOption) => {
-    switch (networkChain[chainId]) {
-      case NetworkName.LOCALHOST:
-        return localhost;
-      case NetworkName.SEPOLIA:
-        return sepolia;
-      default:
-        return;
-    }
+  const { occasions } = useLoadBlockchainData();
+
+  const mappedChain = {
+    "0x539": localhost,
+    "0xaa36a7": sepolia,
   };
 
   const loadBlockchainData = async () => {
-    const provider = new providers.Web3Provider((window as any).ethereum);
+    // const provider = new providers.Web3Provider(window.ethereum);
 
-    console.log("chain: ", (window as any).ethereum.chainId);
+    console.log("chain: ", window.ethereum.chainId);
 
-    const chainId2 = (window as any).ethereum.chainId as NetworkOption;
+    const chainId = window.ethereum.chainId as NetworkOption;
 
     const publicClient = createPublicClient({
-      chain: mappedNetworkChain(chainId2),
-      transport: custom((window as any).ethereum),
+      chain: mappedChain[chainId],
+      transport: custom(window.ethereum),
     });
 
     setPublicClient(publicClient);
 
+    const [account] = await window.ethereum.request({
+      method: "eth_requestAccounts",
+    });
+
     const walletClient = createWalletClient({
-      chain: mappedNetworkChain(chainId2),
-      transport: custom((window as any).ethereum),
+      account,
+      chain: mappedChain[chainId],
+      transport: custom(window.ethereum),
     });
 
     setWalletClient(walletClient);
 
-    const [address] = await walletClient.getAddresses();
-
     const wagmiContractConfig = {
       abi: TOKENMASTER_CONTRACT_ABI,
-      address: NetworkOptions[networkChain[chainId2]] as `0x${string}`,
+      address: NetworkOptions[networkChain[chainId]] as `0x${string}`,
     };
 
-    setProvider(provider);
+    // setProvider(provider);
 
-    const { chainId } = await provider.getNetwork();
+    // const { chainId } = await provider.getNetwork();
 
-    const tokenMasterContract = new ethers.Contract(
-      NETWORK_CONFIG[chainId.toString()].address,
-      TOKENMASTER_CONTRACT_ABI,
-      provider,
-    );
-    setTokenMasterContract(tokenMasterContract);
+    // const tokenMasterContract = new ethers.Contract(
+    //   NETWORK_CONFIG[chainId.toString()].address,
+    //   TOKENMASTER_CONTRACT_ABI,
+    //   provider,
+    // );
+    // setTokenMasterContract(tokenMasterContract);
 
-    const supply = (await publicClient.readContract({
-      ...wagmiContractConfig,
-      functionName: "totalOccasions",
-    })) as bigint;
+    // const totalOccasions = (await publicClient.readContract({
+    //   ...wagmiContractConfig,
+    //   functionName: "totalOccasions",
+    // })) as bigint;
 
-    const occasions: Occasion[] = [];
+    // const occasions: Occasion[] = [];
 
-    for (let i = 1n; i <= Number(supply); i++) {
-      const singleOccasion = await publicClient.readContract({
-        ...wagmiContractConfig,
-        functionName: "getOccasion",
-        args: [i],
-      });
-      occasions.push(singleOccasion as Occasion);
-    }
+    // for (let i = 1n; i <= Number(totalOccasions); i++) {
+    //   const singleOccasion = await publicClient.readContract({
+    //     ...wagmiContractConfig,
+    //     functionName: "getOccasion",
+    //     args: [i],
+    //   });
+    //   occasions.push(singleOccasion as Occasion);
+    // }
 
-    setOccasions(occasions);
+    // setOccasions(occasions);
 
-    (window as any).ethereum.on("accountsChanged", async () => {
-      const accounts = await (window as any).ethereum.request({
+    window.ethereum.on("accountsChanged", async () => {
+      const accounts = await window.ethereum.request({
         method: "eth_requestAccounts",
       });
       const account = getAddress(accounts[0]);
@@ -158,8 +156,8 @@ const Home = () => {
       case modalOptions.addEvent:
         return (
           <CreateEvent
-            tokenMasterContract={tokenMasterContract!}
-            provider={provider!}
+            publicClient={publicClient}
+            walletClient={walletClient}
           />
         );
 
@@ -172,26 +170,26 @@ const Home = () => {
     loadBlockchainData();
   }, [account]);
 
-  useEffect(() => {
-    if (tokenMasterContract && !contractListenerAdded) {
-      tokenMasterContract.on("OccasionCreated", async (occasionId) => {
-        const occasion: Occasion = await tokenMasterContract.getOccasion(
-          occasionId,
-        );
-        setOccasions((prevOccasions) => [...prevOccasions, occasion]);
-      });
-      setContractListenerAdded(true);
-    }
-  }, [tokenMasterContract, contractListenerAdded]);
+  // useEffect(() => {
+  //   if (tokenMasterContract && !contractListenerAdded) {
+  //     tokenMasterContract.on("OccasionCreated", async (occasionId) => {
+  //       const occasion: Occasion = await tokenMasterContract.getOccasion(
+  //         occasionId,
+  //       );
+  //       setOccasions((prevOccasions) => [...prevOccasions, occasion]);
+  //     });
+  //     setContractListenerAdded(true);
+  //   }
+  // }, [tokenMasterContract, contractListenerAdded]);
 
   useEffect(() => {
     const fetchContractOwner = async () => {
       if (publicClient && account !== null) {
-        const chainId2 = (window as any).ethereum.chainId as NetworkOption;
+        const chainId = window.ethereum.chainId as NetworkOption;
 
         const wagmiContractConfig = {
           abi: TOKENMASTER_CONTRACT_ABI,
-          address: NetworkOptions[networkChain[chainId2]] as `0x${string}`,
+          address: NetworkOptions[networkChain[chainId]] as `0x${string}`,
         };
         // const contractOwner = await tokenMasterContract.owner();
         const contractOwner = await publicClient.readContract({

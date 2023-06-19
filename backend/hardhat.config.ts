@@ -14,6 +14,9 @@ const config: HardhatUserConfig = {
       url: QUICKNODE_HTTP_URL,
       accounts: [PRIVATE_KEY!],
     },
+    hardhat: {
+      chainId: 1337,
+    },
   },
   etherscan: {
     apiKey: {

@@ -1,19 +1,20 @@
 import React from 'react';
 import { ethers } from 'ethers';
+import { Address } from 'viem';
 import Link from 'next/link';
 
 interface NavbarProps {
-  account: string | null;
-  setAccount: (account: string) => void;
+  account: Address | null;
+  setAccount: (account: Address) => void;
 }
 
 const Navbar: React.FC<NavbarProps> = ({ account, setAccount }) => {
   const connectHandler = async () => {
-    const accounts = await (window as any).ethereum.request({
+    const accounts = await window.ethereum.request({
       method: 'eth_requestAccounts',
     });
     const account = ethers.utils.getAddress(accounts[0]);
-    setAccount(account);
+    setAccount(account as `0x${string}`);
   };
 
   return (

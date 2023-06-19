@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { ethers, providers } from "ethers";
 import CircularProgress from "@mui/material/CircularProgress";
+import { TOKENMASTER_CONTRACT_ABI } from "../../../constants";
+import { parseUnits } from "viem";
 
 interface CreateEventProps {
-  tokenMasterContract: ethers.Contract;
-  provider: providers.Web3Provider;
+  publicClient: any;
+  walletClient: any;
 }
 
 const CreateEvent: React.FC<CreateEventProps> = ({
-  tokenMasterContract,
-  provider,
+  publicClient,
+  walletClient,
 }) => {
   const [inputs, setInputs] = useState({
     name: "",
@@ -45,24 +46,29 @@ const CreateEvent: React.FC<CreateEventProps> = ({
     e.preventDefault();
 
     try {
-      const signer = await provider.getSigner();
 
       setLoadingTx(true);
-      const tx = await tokenMasterContract
-        .connect(signer)
-        .list(
+
+      const { request } = await publicClient.simulateContract({
+        address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+        abi: TOKENMASTER_CONTRACT_ABI,
+        functionName: "list",
+        args: [
           inputs.name,
-          ethers.utils.parseUnits(inputs.cost, "ether"),
+          parseUnits(inputs.cost as `${number}`, 18),
           parseInt(inputs.tickets),
           inputs.date,
           inputs.time,
           inputs.location,
-        );
-      await tx.wait();
+        ],
+      });
+
+      console.log('request: ', request)
+      await walletClient.writeContract(request);
 
       setLoadingTx(false);
     } catch (err) {
-      setLoadingTx(false);
+    setLoadingTx(false);
       console.error(err);
     }
   };
