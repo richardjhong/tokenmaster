@@ -28,12 +28,16 @@ export interface Occasion {
   location: string;
 }
 
+type WalletClientType = ReturnType<typeof createWalletClient>
+type PublicClientType = ReturnType<typeof createPublicClient>
+
 const useLoadBlockchainData = () => {
   const [account, setAccount] = useState<Address>();
   const [occasions, setOccasions] = useState<Occasion[]>([]);
-  const [occasion, setOccasion] = useState<Occasion | null>(null);
   const [contractOwnerConnected, setContractOwnerConnected] =
     useState<boolean>(false);
+  const [publicClient, setPublicClient] = useState<PublicClientType>();
+  const [walletClient, setWalletClient] = useState<WalletClientType>();
 
   const mappedChain = {
     "0x539": localhost,
@@ -52,16 +56,28 @@ const useLoadBlockchainData = () => {
       method: "eth_requestAccounts",
     });
 
+    setAccount(connectedAccount);
+
     const publicClient = createPublicClient({
       chain: mappedChain[chainId],
       transport: custom(window.ethereum),
     });
+
+    setPublicClient(publicClient);
 
     const walletClient = createWalletClient({
       account: connectedAccount,
       chain: mappedChain[chainId],
       transport: custom(window.ethereum),
     });
+
+    setWalletClient(walletClient);
+
+    const balance = await publicClient.getBalance({
+      address: wagmiContractConfig.address,
+    });
+
+    console.log("balance: ", balance);
 
     const totalOccasions = (await publicClient.readContract({
       ...wagmiContractConfig,
@@ -81,6 +97,19 @@ const useLoadBlockchainData = () => {
 
     setOccasions(fetchedOccasions);
 
+    const contractOwner = (await publicClient.readContract({
+      ...wagmiContractConfig,
+      functionName: "owner",
+    })) as Address;
+
+    if (account) {
+      isAddressEqual(contractOwner as `0x${string}`, account as `0x${string}`)
+        ? setContractOwnerConnected(true)
+        : setContractOwnerConnected(false);
+
+      console.log("testing: ", contractOwnerConnected);
+    }
+
     window.ethereum.on("accountsChanged", async () => {
       const accounts = await window.ethereum.request({
         method: "eth_requestAccounts",
@@ -94,7 +123,14 @@ const useLoadBlockchainData = () => {
     loadBlockchainData();
   }, [account]);
 
-  return {occasions};
+  return {
+    account,
+    setAccount,
+    occasions,
+    contractOwnerConnected,
+    publicClient,
+    walletClient,
+  };
 };
 
 export default useLoadBlockchainData;

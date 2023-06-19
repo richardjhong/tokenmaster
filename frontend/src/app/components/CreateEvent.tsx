@@ -2,16 +2,11 @@ import React, { useState, useEffect } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
 import { TOKENMASTER_CONTRACT_ABI } from "../../../constants";
 import { parseUnits } from "viem";
+import useLoadBlockchainData from "@/utils/useLoadBlockchainData";
 
-interface CreateEventProps {
-  publicClient: any;
-  walletClient: any;
-}
+const CreateEvent: React.FC = () => {
+  const { publicClient, walletClient } = useLoadBlockchainData();
 
-const CreateEvent: React.FC<CreateEventProps> = ({
-  publicClient,
-  walletClient,
-}) => {
   const [inputs, setInputs] = useState({
     name: "",
     cost: "",
@@ -46,10 +41,9 @@ const CreateEvent: React.FC<CreateEventProps> = ({
     e.preventDefault();
 
     try {
-
       setLoadingTx(true);
 
-      const { request } = await publicClient.simulateContract({
+      const { request } = await publicClient!.simulateContract({
         address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
         abi: TOKENMASTER_CONTRACT_ABI,
         functionName: "list",
@@ -63,12 +57,12 @@ const CreateEvent: React.FC<CreateEventProps> = ({
         ],
       });
 
-      console.log('request: ', request)
-      await walletClient.writeContract(request);
+      console.log("request: ", request);
+      await walletClient!.writeContract(request);
 
       setLoadingTx(false);
     } catch (err) {
-    setLoadingTx(false);
+      setLoadingTx(false);
       console.error(err);
     }
   };

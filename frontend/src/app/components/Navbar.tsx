@@ -2,13 +2,11 @@ import React from 'react';
 import { ethers } from 'ethers';
 import { Address } from 'viem';
 import Link from 'next/link';
+import useLoadBlockchainData from '@/utils/useLoadBlockchainData';
 
-interface NavbarProps {
-  account: Address | null;
-  setAccount: (account: Address) => void;
-}
 
-const Navbar: React.FC<NavbarProps> = ({ account, setAccount }) => {
+const Navbar: React.FC = () => {
+  const { account, setAccount } = useLoadBlockchainData();
   const connectHandler = async () => {
     const accounts = await window.ethereum.request({
       method: 'eth_requestAccounts',
