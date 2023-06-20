@@ -1,43 +1,59 @@
 import React, { useState, useEffect } from "react";
-import { ethers, providers } from "ethers";
 import Seat from "./Seat";
 import { Occasion } from "../page";
+import { Address } from "viem";
+import {
+  PublicClientType,
+  WalletClientType,
+} from "@/utils/useLoadBlockchainData";
+import { TOKENMASTER_CONTRACT_ABI } from "../../../constants";
 
 interface SeatChartProps {
   occasion: Occasion;
-  tokenMasterContract: ethers.Contract;
-  provider: providers.Web3Provider;
+  publicClient: PublicClientType;
+  walletClient: WalletClientType;
+  address: Address;
+  wagmiContractConfig: any;
   setToggle: (toggle: boolean) => void;
-  fetchBalance: () => void;
 }
 
 const SeatChart: React.FC<SeatChartProps> = ({
   occasion,
-  tokenMasterContract,
-  provider,
+  publicClient,
+  walletClient,
+  address,
+  wagmiContractConfig,
   setToggle,
-  fetchBalance,
 }) => {
-  const [seatsTaken, setSeatsTaken] = useState<boolean>(false);
+  const [seatsTaken, setSeatsTaken] = useState<bigint[] | null>(null);
   const [hasSold, setHasSold] = useState<boolean>(false);
 
   const getSeatsTaken = async () => {
-    const seatsTaken = await tokenMasterContract.getSeatsTaken(occasion.id);
+    const seatsTaken = (await publicClient.readContract({
+      ...wagmiContractConfig,
+      functionName: "getSeatsTaken",
+      args: [occasion.id],
+    })) as bigint[];
+
     setSeatsTaken(seatsTaken);
   };
 
   const buyHandler = async (_seat: number) => {
     setHasSold(false);
 
-    const signer = await provider.getSigner();
-    const tx = await tokenMasterContract
-      .connect(signer)
-      .mint(occasion.id, _seat, { value: occasion.cost });
-    await tx.wait();
+    const { request } = await publicClient!.simulateContract({
+      address,
+      account: walletClient!.account!.address,
+      abi: TOKENMASTER_CONTRACT_ABI,
+      functionName: "mint",
+      args: [occasion.id, _seat],
+      value: occasion.cost,
+    });
+
+    const hash = await walletClient!.writeContract(request);
+    await publicClient!.waitForTransactionReceipt({ hash });
 
     setHasSold(true);
-
-    await fetchBalance();
   };
 
   useEffect(() => {
