@@ -9,6 +9,7 @@ import {
   getAddress,
   isAddressEqual,
   Log,
+  formatUnits,
 } from "viem";
 import {
   NetworkOptions,
@@ -44,6 +45,7 @@ const useLoadBlockchainData = () => {
   const [contractListenerAdded, setContractListenerAdded] =
     useState<boolean>(false);
   const [wagmiContractConfig, setwagmiContractConfig] = useState<any>({});
+  const [contractBalance, setContractBalance] = useState<string>("0");
 
   const mappedChain = {
     "0x539": localhost,
@@ -69,18 +71,18 @@ const useLoadBlockchainData = () => {
 
     setPublicClient(publicClient);
 
-    if (account) {
-      const walletClient = createWalletClient({
-        account: account !== null ? account : undefined,
-        chain: mappedChain[chainId],
-        transport: custom(window.ethereum),
-      });
-      setWalletClient(walletClient);
-    }
+    const walletClient = createWalletClient({
+      account: account !== null ? account : undefined,
+      chain: mappedChain[chainId],
+      transport: custom(window.ethereum),
+    });
+    setWalletClient(walletClient);
 
     const balance = await publicClient.getBalance({
       address: wagmiContractConfig.address,
     });
+
+    setContractBalance(formatUnits(balance, 18));
 
     const totalOccasions = (await publicClient.readContract({
       ...wagmiContractConfig,
@@ -151,7 +153,9 @@ const useLoadBlockchainData = () => {
     contractOwnerConnected,
     publicClient,
     walletClient,
+    wagmiContractConfig,
     address: wagmiContractConfig?.address,
+    contractBalance,
   };
 };
 

@@ -1,5 +1,4 @@
 import { modalOptions } from "@/utils/modalOptions";
-import useLoadBlockchainData from "@/utils/useLoadBlockchainData";
 import React from "react";
 
 const sortOptions = [

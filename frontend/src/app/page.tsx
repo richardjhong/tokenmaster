@@ -1,6 +1,5 @@
 "use client";
 
-import { ethers, providers } from "ethers";
 import { useState } from "react";
 import {
   Card,
@@ -25,12 +24,8 @@ export interface Occasion {
 }
 
 const Home = () => {
-  const [provider, setProvider] = useState<providers.Web3Provider | null>(null);
   const [occasion, setOccasion] = useState<Occasion | null>(null);
   const [toggle, setToggle] = useState<boolean>(false);
-  const [tokenMasterContract, setTokenMasterContract] =
-    useState<ethers.Contract | null>(null);
-  const [contractBalance, setContractBalance] = useState<string>("0");
   const [modalContent, setModalContent] = useState<modalOptions>(
     modalOptions.addEvent,
   );
@@ -43,15 +38,9 @@ const Home = () => {
     publicClient,
     walletClient,
     address,
+    wagmiContractConfig,
+    contractBalance,
   } = useLoadBlockchainData();
-
-  const fetchBalance = async () => {
-    if (tokenMasterContract && provider) {
-      const balance = await provider.getBalance(tokenMasterContract.address);
-      const formattedBalance = ethers.utils.formatEther(balance);
-      setContractBalance(formattedBalance);
-    }
-  };
 
   const displayModalContent = () => {
     switch (modalContent) {
@@ -59,10 +48,11 @@ const Home = () => {
         return (
           <SeatChart
             occasion={occasion!}
-            tokenMasterContract={tokenMasterContract!}
-            provider={provider!}
+            publicClient={publicClient!}
+            walletClient={walletClient!}
+            address={address}
+            wagmiContractConfig={wagmiContractConfig}
             setToggle={setToggle}
-            fetchBalance={fetchBalance}
           />
         );
       case modalOptions.addEvent:
