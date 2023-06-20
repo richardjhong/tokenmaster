@@ -49,7 +49,7 @@ const useLoadBlockchainData = () => {
     "0xaa36a7": sepolia,
   };
 
-  const chainId = window.ethereum.chainId as NetworkOption;
+  const chainId = window!.ethereum.chainId as NetworkOption;
 
   const wagmiContractConfig = {
     abi: TOKENMASTER_CONTRACT_ABI,
@@ -59,7 +59,7 @@ const useLoadBlockchainData = () => {
   const loadBlockchainData = async () => {
     const publicClient = createPublicClient({
       chain: mappedChain[chainId],
-      transport: custom(window.ethereum),
+      transport: custom(window!.ethereum),
     });
 
     setPublicClient(publicClient);
@@ -68,7 +68,7 @@ const useLoadBlockchainData = () => {
       const walletClient = createWalletClient({
         account: account !== null ? account : undefined,
         chain: mappedChain[chainId],
-        transport: custom(window.ethereum),
+        transport: custom(window!.ethereum),
       });
       setWalletClient(walletClient);
     }
@@ -106,8 +106,8 @@ const useLoadBlockchainData = () => {
         : setContractOwnerConnected(false);
     }
 
-    window.ethereum.on("accountsChanged", async () => {
-      const accounts = await window.ethereum.request({
+    window!.ethereum.on("accountsChanged", async () => {
+      const accounts = await window!.ethereum.request({
         method: "eth_requestAccounts",
       });
       const account = getAddress(accounts[0]);
