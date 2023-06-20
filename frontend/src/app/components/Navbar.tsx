@@ -10,7 +10,7 @@ interface NavbarProps {
 
 const Navbar: React.FC<NavbarProps> = ({ account, setAccount }) => {
   const connectHandler = async () => {
-    const accounts = await window!.ethereum.request({
+    const accounts = await window.ethereum.request({
       method: 'eth_requestAccounts',
     });
     const account = getAddress(accounts[0]);

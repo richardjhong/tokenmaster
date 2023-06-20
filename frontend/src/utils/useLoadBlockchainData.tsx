@@ -43,23 +43,28 @@ const useLoadBlockchainData = () => {
   const [walletClient, setWalletClient] = useState<WalletClientType>();
   const [contractListenerAdded, setContractListenerAdded] =
     useState<boolean>(false);
+  const [wagmiContractConfig, setwagmiContractConfig] = useState<any>({});
 
   const mappedChain = {
     "0x539": localhost,
     "0xaa36a7": sepolia,
   };
 
-  const chainId = window!.ethereum.chainId as NetworkOption;
-
-  const wagmiContractConfig = {
-    abi: TOKENMASTER_CONTRACT_ABI,
-    address: NetworkOptions[networkChain[chainId]] as `0x${string}`,
-  };
-
   const loadBlockchainData = async () => {
+    const chainId = window.ethereum.chainId as NetworkOption;
+
+    const wagmiContractConfig = {
+      abi: TOKENMASTER_CONTRACT_ABI,
+      address: NetworkOptions[networkChain[chainId]] as `0x${string}`,
+    };
+
+    setwagmiContractConfig({
+      ...wagmiContractConfig,
+    });
+
     const publicClient = createPublicClient({
       chain: mappedChain[chainId],
-      transport: custom(window!.ethereum),
+      transport: custom(window.ethereum),
     });
 
     setPublicClient(publicClient);
@@ -68,7 +73,7 @@ const useLoadBlockchainData = () => {
       const walletClient = createWalletClient({
         account: account !== null ? account : undefined,
         chain: mappedChain[chainId],
-        transport: custom(window!.ethereum),
+        transport: custom(window.ethereum),
       });
       setWalletClient(walletClient);
     }
@@ -106,8 +111,8 @@ const useLoadBlockchainData = () => {
         : setContractOwnerConnected(false);
     }
 
-    window!.ethereum.on("accountsChanged", async () => {
-      const accounts = await window!.ethereum.request({
+    window.ethereum.on("accountsChanged", async () => {
+      const accounts = await window.ethereum.request({
         method: "eth_requestAccounts",
       });
       const account = getAddress(accounts[0]);
@@ -137,7 +142,7 @@ const useLoadBlockchainData = () => {
 
       setContractListenerAdded(true);
     }
-  }, [publicClient, contractListenerAdded]);
+  }, [publicClient, wagmiContractConfig, contractListenerAdded]);
 
   return {
     account,
@@ -146,7 +151,7 @@ const useLoadBlockchainData = () => {
     contractOwnerConnected,
     publicClient,
     walletClient,
-    address: wagmiContractConfig.address,
+    address: wagmiContractConfig?.address,
   };
 };
 
