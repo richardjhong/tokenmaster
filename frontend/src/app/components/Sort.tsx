@@ -9,13 +9,13 @@ const sortOptions = [
 ];
 
 interface SortProps {
+  contractOwnerConnected: boolean;
   setModalContent: (addEvent: modalOptions.addEvent) => void;
   toggle: any;
   setToggle: (toggle: boolean) => void;
 }
 
-const Sort: React.FC<SortProps> = ({ setModalContent, toggle, setToggle }) => {
-  const { contractOwnerConnected } = useLoadBlockchainData();
+const Sort: React.FC<SortProps> = ({ setModalContent, toggle, setToggle, contractOwnerConnected }) => {
   const togglePop = () => {
     setModalContent(modalOptions.addEvent)
     toggle ? setToggle(false) : setToggle(true);

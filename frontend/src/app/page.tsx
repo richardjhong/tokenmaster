@@ -1,14 +1,7 @@
 "use client";
 
 import { ethers, providers } from "ethers";
-import { Address, isAddressEqual } from "viem";
-import { useState, useEffect } from "react";
-import {
-  NetworkOptions,
-  NetworkOption,
-  networkChain,
-  TOKENMASTER_CONTRACT_ABI,
-} from "../../constants";
+import { useState } from "react";
 import {
   Card,
   Navbar,
@@ -41,10 +34,16 @@ const Home = () => {
   const [modalContent, setModalContent] = useState<modalOptions>(
     modalOptions.addEvent,
   );
-  const [contractListenerAdded, setContractListenerAdded] =
-    useState<boolean>(false);
 
-  const { occasions, contractOwnerConnected } = useLoadBlockchainData();
+  const {
+    account,
+    setAccount,
+    occasions,
+    contractOwnerConnected,
+    publicClient,
+    walletClient,
+    address,
+  } = useLoadBlockchainData();
 
   const fetchBalance = async () => {
     if (tokenMasterContract && provider) {
@@ -67,29 +66,26 @@ const Home = () => {
           />
         );
       case modalOptions.addEvent:
-        return <CreateEvent />;
+        return (
+          <CreateEvent
+            publicClient={publicClient!}
+            walletClient={walletClient!}
+            address={address}
+          />
+        );
 
       default:
         return;
     }
   };
 
-  // useEffect(() => {
-  //   if (tokenMasterContract && !contractListenerAdded) {
-  //     tokenMasterContract.on("OccasionCreated", async (occasionId) => {
-  //       const occasion: Occasion = await tokenMasterContract.getOccasion(
-  //         occasionId,
-  //       );
-  //       setOccasions((prevOccasions) => [...prevOccasions, occasion]);
-  //     });
-  //     setContractListenerAdded(true);
-  //   }
-  // }, [tokenMasterContract, contractListenerAdded]);
-
   return (
     <>
       <header className='bg-gradient-banner from-indigo-900 via-blue-500 to-indigo-900 min-h-[25vh] relative'>
-        <Navbar />
+        <Navbar
+          account={account as `0x${string}`}
+          setAccount={setAccount}
+        />
         <div className='absolute bottom-5 left-20 text-white text-2xl sm:text-5xl md:text-3xl font-light'>
           {contractOwnerConnected && (
             <h3>Contract Balance: {contractBalance} ETH</h3>
@@ -105,6 +101,7 @@ const Home = () => {
           setModalContent={setModalContent}
           toggle={toggle}
           setToggle={setToggle}
+          contractOwnerConnected={contractOwnerConnected}
         />
       </div>
 

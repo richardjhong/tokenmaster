@@ -8,6 +8,7 @@ import {
   custom,
   getAddress,
   isAddressEqual,
+  Log,
 } from "viem";
 import {
   NetworkOptions,
@@ -28,36 +29,34 @@ export interface Occasion {
   location: string;
 }
 
-type WalletClientType = ReturnType<typeof createWalletClient>
-type PublicClientType = ReturnType<typeof createPublicClient>
+type LogWithArg = Log & { args: { latestOccasionIndex: bigint } };
+
+export type WalletClientType = ReturnType<typeof createWalletClient>;
+export type PublicClientType = ReturnType<typeof createPublicClient>;
 
 const useLoadBlockchainData = () => {
-  const [account, setAccount] = useState<Address>();
+  const [account, setAccount] = useState<Address | null>(null);
   const [occasions, setOccasions] = useState<Occasion[]>([]);
   const [contractOwnerConnected, setContractOwnerConnected] =
     useState<boolean>(false);
   const [publicClient, setPublicClient] = useState<PublicClientType>();
   const [walletClient, setWalletClient] = useState<WalletClientType>();
+  const [contractListenerAdded, setContractListenerAdded] =
+    useState<boolean>(false);
 
   const mappedChain = {
     "0x539": localhost,
     "0xaa36a7": sepolia,
   };
 
+  const chainId = window.ethereum.chainId as NetworkOption;
+
+  const wagmiContractConfig = {
+    abi: TOKENMASTER_CONTRACT_ABI,
+    address: NetworkOptions[networkChain[chainId]] as `0x${string}`,
+  };
+
   const loadBlockchainData = async () => {
-    const chainId = window.ethereum.chainId as NetworkOption;
-
-    const wagmiContractConfig = {
-      abi: TOKENMASTER_CONTRACT_ABI,
-      address: NetworkOptions[networkChain[chainId]] as `0x${string}`,
-    };
-
-    const [connectedAccount] = await window.ethereum.request({
-      method: "eth_requestAccounts",
-    });
-
-    setAccount(connectedAccount);
-
     const publicClient = createPublicClient({
       chain: mappedChain[chainId],
       transport: custom(window.ethereum),
@@ -65,19 +64,18 @@ const useLoadBlockchainData = () => {
 
     setPublicClient(publicClient);
 
-    const walletClient = createWalletClient({
-      account: connectedAccount,
-      chain: mappedChain[chainId],
-      transport: custom(window.ethereum),
-    });
-
-    setWalletClient(walletClient);
+    if (account) {
+      const walletClient = createWalletClient({
+        account: account !== null ? account : undefined,
+        chain: mappedChain[chainId],
+        transport: custom(window.ethereum),
+      });
+      setWalletClient(walletClient);
+    }
 
     const balance = await publicClient.getBalance({
       address: wagmiContractConfig.address,
     });
-
-    console.log("balance: ", balance);
 
     const totalOccasions = (await publicClient.readContract({
       ...wagmiContractConfig,
@@ -106,8 +104,6 @@ const useLoadBlockchainData = () => {
       isAddressEqual(contractOwner as `0x${string}`, account as `0x${string}`)
         ? setContractOwnerConnected(true)
         : setContractOwnerConnected(false);
-
-      console.log("testing: ", contractOwnerConnected);
     }
 
     window.ethereum.on("accountsChanged", async () => {
@@ -123,6 +119,26 @@ const useLoadBlockchainData = () => {
     loadBlockchainData();
   }, [account]);
 
+  useEffect(() => {
+    if (publicClient && !contractListenerAdded) {
+      publicClient.watchContractEvent({
+        ...wagmiContractConfig,
+        eventName: "OccasionCreated",
+        onLogs: async (logs) => {
+          const emittedLog = logs[0] as LogWithArg;
+          const occasion: Occasion = (await publicClient.readContract({
+            ...wagmiContractConfig,
+            functionName: "getOccasion",
+            args: [emittedLog.args.latestOccasionIndex],
+          })) as Occasion;
+          setOccasions((prevOccasions) => [...prevOccasions, occasion]);
+        },
+      });
+
+      setContractListenerAdded(true);
+    }
+  }, [publicClient, contractListenerAdded]);
+
   return {
     account,
     setAccount,
@@ -130,6 +146,7 @@ const useLoadBlockchainData = () => {
     contractOwnerConnected,
     publicClient,
     walletClient,
+    address: wagmiContractConfig.address,
   };
 };
 
