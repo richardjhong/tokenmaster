@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
-import { TOKENMASTER_CONTRACT_ABI } from "../../../constants";
 import { Address, parseUnits } from "viem";
 import {
   PublicClientType,
@@ -10,14 +9,14 @@ import {
 interface CreateEventProps {
   publicClient: PublicClientType;
   walletClient: WalletClientType;
-  address: Address;
+  contractConfig: any;
   setToggle: (toggle: boolean) => void;
 }
 
 const CreateEvent: React.FC<CreateEventProps> = ({
   publicClient,
   walletClient,
-  address,
+  contractConfig,
   setToggle,
 }) => {
   const [inputs, setInputs] = useState({
@@ -57,9 +56,9 @@ const CreateEvent: React.FC<CreateEventProps> = ({
       setLoadingTx(true);
 
       const { request } = await publicClient!.simulateContract({
-        address,
+        address: contractConfig.address,
         account: walletClient!.account!.address,
-        abi: TOKENMASTER_CONTRACT_ABI,
+        abi: contractConfig.abi,
         functionName: "list",
         args: [
           inputs.name,

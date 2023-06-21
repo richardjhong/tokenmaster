@@ -31,7 +31,9 @@ export interface Occasion {
   location: string;
 }
 
-type LogWithArg = Log & { args: { latestOccasionIndex: bigint } };
+type LogWithArg = Log & {
+  args: { latestOccasionIndex: bigint; latestBalance: bigint };
+};
 
 export type WalletClientType = ReturnType<typeof createWalletClient>;
 export type PublicClientType = ReturnType<typeof createPublicClient>;
@@ -45,7 +47,7 @@ const useLoadBlockchainData = () => {
   const [walletClient, setWalletClient] = useState<WalletClientType>();
   const [contractListenerAdded, setContractListenerAdded] =
     useState<boolean>(false);
-  const [wagmiContractConfig, setwagmiContractConfig] = useState<any>({});
+  const [contractConfig, setContractConfig] = useState<any>({});
   const [contractBalance, setContractBalance] = useState<string>("0");
 
   const mappedChain = {
@@ -56,13 +58,13 @@ const useLoadBlockchainData = () => {
   const loadBlockchainData = async () => {
     const chainId = window.ethereum.chainId as NetworkOption;
 
-    const wagmiContractConfig = {
+    const contractConfig = {
       abi: TOKENMASTER_CONTRACT_ABI,
       address: NetworkOptions[networkChain[chainId]] as `0x${string}`,
     };
 
-    setwagmiContractConfig({
-      ...wagmiContractConfig,
+    setContractConfig({
+      ...contractConfig,
     });
 
     const publicClient = createPublicClient({
@@ -81,13 +83,13 @@ const useLoadBlockchainData = () => {
     setWalletClient(walletClient);
 
     const balance = await publicClient.getBalance({
-      address: wagmiContractConfig.address,
+      address: contractConfig.address,
     });
 
     setContractBalance(formatUnits(balance, 18));
 
     const totalOccasions = (await publicClient.readContract({
-      ...wagmiContractConfig,
+      ...contractConfig,
       functionName: "totalOccasions",
     })) as bigint;
 
@@ -95,7 +97,7 @@ const useLoadBlockchainData = () => {
 
     for (let i = 1n; i <= Number(totalOccasions); i++) {
       const singleOccasion = await publicClient.readContract({
-        ...wagmiContractConfig,
+        ...contractConfig,
         functionName: "getOccasion",
         args: [i],
       });
@@ -105,7 +107,7 @@ const useLoadBlockchainData = () => {
     setOccasions(fetchedOccasions);
 
     const contractOwner = (await publicClient.readContract({
-      ...wagmiContractConfig,
+      ...contractConfig,
       functionName: "owner",
     })) as Address;
 
@@ -131,12 +133,12 @@ const useLoadBlockchainData = () => {
   useEffect(() => {
     if (publicClient && !contractListenerAdded) {
       publicClient.watchContractEvent({
-        ...wagmiContractConfig,
+        ...contractConfig,
         eventName: "OccasionCreated",
         onLogs: async (logs) => {
           const emittedLog = logs[0] as LogWithArg;
           const occasion: Occasion = (await publicClient.readContract({
-            ...wagmiContractConfig,
+            ...contractConfig,
             functionName: "getOccasion",
             args: [emittedLog.args.latestOccasionIndex],
           })) as Occasion;
@@ -145,9 +147,19 @@ const useLoadBlockchainData = () => {
         },
       });
 
+      publicClient.watchContractEvent({
+        ...contractConfig,
+        eventName: "BalanceUpdated",
+        onLogs: async (logs) => {
+          const emittedLog = logs[0] as LogWithArg;
+          const balance = emittedLog.args.latestBalance;
+          setContractBalance(formatUnits(balance, 18));
+        },
+      });
+
       setContractListenerAdded(true);
     }
-  }, [publicClient, wagmiContractConfig, contractListenerAdded]);
+  }, [publicClient, contractConfig, contractListenerAdded]);
 
   return {
     account,
@@ -156,8 +168,7 @@ const useLoadBlockchainData = () => {
     contractOwnerConnected,
     publicClient,
     walletClient,
-    wagmiContractConfig,
-    address: wagmiContractConfig?.address,
+    contractConfig,
     contractBalance,
   };
 };

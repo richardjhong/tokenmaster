@@ -12,7 +12,7 @@ export type NetworkOption = keyof typeof networkChain;
 
 export const NetworkOptions = {
   [NetworkName.LOCALHOST]: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-  [NetworkName.SEPOLIA]: "0xcB342B0eb3AA8cAdd4cC883E42805a813B3aEBDB",
+  [NetworkName.SEPOLIA]: "0x9F3C98fAc3410156ce5F62C8ceDBb84d3F6BB405",
 };
 
 export const TOKENMASTER_CONTRACT_ABI = [
@@ -80,6 +80,19 @@ export const TOKENMASTER_CONTRACT_ABI = [
       },
     ],
     name: "ApprovalForAll",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "uint256",
+        name: "latestBalance",
+        type: "uint256",
+      },
+    ],
+    name: "BalanceUpdated",
     type: "event",
   },
   {

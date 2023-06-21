@@ -1,20 +1,17 @@
 import React, { useState, useEffect } from "react";
 import Seat from "./Seat";
 import { Occasion } from "../page";
-import { Address } from "viem";
 import {
   PublicClientType,
   WalletClientType,
 } from "@/utils/useLoadBlockchainData";
-import { TOKENMASTER_CONTRACT_ABI } from "../../../constants";
 import { toast } from "react-toastify";
 
 interface SeatChartProps {
   occasion: Occasion;
   publicClient: PublicClientType;
   walletClient: WalletClientType;
-  address: Address;
-  wagmiContractConfig: any;
+  contractConfig: any;
   setToggle: (toggle: boolean) => void;
 }
 
@@ -22,8 +19,7 @@ const SeatChart: React.FC<SeatChartProps> = ({
   occasion,
   publicClient,
   walletClient,
-  address,
-  wagmiContractConfig,
+  contractConfig,
   setToggle,
 }) => {
   const [seatsTaken, setSeatsTaken] = useState<bigint[] | null>(null);
@@ -31,7 +27,7 @@ const SeatChart: React.FC<SeatChartProps> = ({
 
   const getSeatsTaken = async () => {
     const seatsTaken = (await publicClient.readContract({
-      ...wagmiContractConfig,
+      ...contractConfig,
       functionName: "getSeatsTaken",
       args: [occasion.id],
     })) as bigint[];
@@ -48,9 +44,9 @@ const SeatChart: React.FC<SeatChartProps> = ({
     setHasSold(false);
 
     const { request } = await publicClient!.simulateContract({
-      address,
+      address: contractConfig.address,
+      abi: contractConfig.abi,
       account: walletClient!.account!.address,
-      abi: TOKENMASTER_CONTRACT_ABI,
       functionName: "mint",
       args: [occasion.id, _seat],
       value: occasion.cost,
