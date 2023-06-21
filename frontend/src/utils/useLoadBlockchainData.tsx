@@ -58,8 +58,6 @@ const useLoadBlockchainData = () => {
   const loadBlockchainData = async () => {
     const chainId = window.ethereum.chainId as NetworkOption;
 
-    console.log("chainId: ", chainId);
-
     const contractConfig = {
       abi: TOKENMASTER_CONTRACT_ABI,
       address: NetworkOptions[networkChain[chainId]] as `0x${string}`,
