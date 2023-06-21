@@ -2,18 +2,23 @@ import React, { useState, useEffect } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
 import { TOKENMASTER_CONTRACT_ABI } from "../../../constants";
 import { Address, parseUnits } from "viem";
-import { PublicClientType, WalletClientType } from "@/utils/useLoadBlockchainData";
+import {
+  PublicClientType,
+  WalletClientType,
+} from "@/utils/useLoadBlockchainData";
 
 interface CreateEventProps {
   publicClient: PublicClientType;
   walletClient: WalletClientType;
   address: Address;
+  setToggle: (toggle: boolean) => void;
 }
 
 const CreateEvent: React.FC<CreateEventProps> = ({
   publicClient,
   walletClient,
   address,
+  setToggle,
 }) => {
   const [inputs, setInputs] = useState({
     name: "",
@@ -70,6 +75,7 @@ const CreateEvent: React.FC<CreateEventProps> = ({
       await publicClient!.waitForTransactionReceipt({ hash });
 
       setLoadingTx(false);
+      setToggle(false);
     } catch (err) {
       setLoadingTx(false);
       console.error(err);
