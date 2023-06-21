@@ -11,6 +11,8 @@ import {
 } from "./components";
 import { modalOptions } from "@/utils/modalOptions";
 import useLoadBlockchainData from "@/utils/useLoadBlockchainData";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export interface Occasion {
   id: bigint;
@@ -61,9 +63,9 @@ const Home = () => {
             publicClient={publicClient!}
             walletClient={walletClient!}
             address={address}
+            setToggle={setToggle}
           />
         );
-
       default:
         return;
     }
@@ -71,6 +73,8 @@ const Home = () => {
 
   return (
     <>
+      <ToastContainer />
+
       <header className='bg-gradient-banner from-indigo-900 via-blue-500 to-indigo-900 min-h-[25vh] relative'>
         <Navbar
           account={account as `0x${string}`}

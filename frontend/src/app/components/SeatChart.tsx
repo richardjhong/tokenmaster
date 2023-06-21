@@ -7,6 +7,7 @@ import {
   WalletClientType,
 } from "@/utils/useLoadBlockchainData";
 import { TOKENMASTER_CONTRACT_ABI } from "../../../constants";
+import { toast } from "react-toastify";
 
 interface SeatChartProps {
   occasion: Occasion;
@@ -39,6 +40,11 @@ const SeatChart: React.FC<SeatChartProps> = ({
   };
 
   const buyHandler = async (_seat: number) => {
+    if (!walletClient?.account?.address) {
+      toast.error(`Please connect your wallet to complete purchase of seat ${_seat}`);
+      return;
+    }
+
     setHasSold(false);
 
     const { request } = await publicClient!.simulateContract({

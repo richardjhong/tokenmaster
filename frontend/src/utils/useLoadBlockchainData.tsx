@@ -18,6 +18,7 @@ import {
   TOKENMASTER_CONTRACT_ABI,
 } from "../../constants";
 import { localhost, sepolia } from "viem/chains";
+import { toast } from "react-toastify";
 
 export interface Occasion {
   id: bigint;
@@ -76,6 +77,7 @@ const useLoadBlockchainData = () => {
       chain: mappedChain[chainId],
       transport: custom(window.ethereum),
     });
+
     setWalletClient(walletClient);
 
     const balance = await publicClient.getBalance({
@@ -139,6 +141,7 @@ const useLoadBlockchainData = () => {
             args: [emittedLog.args.latestOccasionIndex],
           })) as Occasion;
           setOccasions((prevOccasions) => [...prevOccasions, occasion]);
+          toast.success(`${occasion.name} now listed`);
         },
       });
 
