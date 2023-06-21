@@ -27,6 +27,7 @@ contract TokenMaster is ERC721 {
   mapping(uint256 => uint256[]) seatsTaken;
 
   event OccasionCreated(uint256 indexed latestOccasionIndex);
+  event BalanceUpdated(uint256 indexed latestBalance);
 
   modifier onlyOwner() {
     require(msg.sender == owner, "Only the contract owner can call this");
@@ -90,6 +91,7 @@ contract TokenMaster is ERC721 {
 
     totalSupply++;
     _safeMint(msg.sender, totalSupply);
+    emit BalanceUpdated(address(this).balance);
   }
 
   /// @notice getOccasion returns the occasion associated with the input _id

@@ -11,7 +11,7 @@ import {
 } from "./components";
 import { modalOptions } from "@/utils/modalOptions";
 import useLoadBlockchainData from "@/utils/useLoadBlockchainData";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 export interface Occasion {
@@ -39,8 +39,7 @@ const Home = () => {
     contractOwnerConnected,
     publicClient,
     walletClient,
-    address,
-    wagmiContractConfig,
+    contractConfig,
     contractBalance,
   } = useLoadBlockchainData();
 
@@ -52,8 +51,7 @@ const Home = () => {
             occasion={occasion!}
             publicClient={publicClient!}
             walletClient={walletClient!}
-            address={address}
-            wagmiContractConfig={wagmiContractConfig}
+            contractConfig={contractConfig}
             setToggle={setToggle}
           />
         );
@@ -62,7 +60,7 @@ const Home = () => {
           <CreateEvent
             publicClient={publicClient!}
             walletClient={walletClient!}
-            address={address}
+            contractConfig={contractConfig}
             setToggle={setToggle}
           />
         );
