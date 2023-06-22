@@ -53,8 +53,6 @@ const useLoadBlockchainData = () => {
     useState<boolean>(false);
   const [publicClient, setPublicClient] = useState<PublicClientType>();
   const [walletClient, setWalletClient] = useState<WalletClientType>();
-  const [contractListenerAdded, setContractListenerAdded] =
-    useState<boolean>(false);
   const [contractConfig, setContractConfig] = useState<contractConfigType | {}>(
     {},
   );
@@ -141,8 +139,8 @@ const useLoadBlockchainData = () => {
   }, [account]);
 
   useEffect(() => {
-    if (publicClient && !contractListenerAdded) {
-      publicClient.watchContractEvent({
+    if (publicClient) {
+      const unwatchOccasion = publicClient.watchContractEvent({
         abi: (contractConfig as contractConfigType).abi,
         address: (contractConfig as contractConfigType).address,
         eventName: "OccasionCreated",
@@ -159,7 +157,7 @@ const useLoadBlockchainData = () => {
         },
       });
 
-      publicClient.watchContractEvent({
+      const unwatchBalance = publicClient.watchContractEvent({
         abi: (contractConfig as contractConfigType).abi,
         address: (contractConfig as contractConfigType).address,
         eventName: "BalanceUpdated",
@@ -170,9 +168,12 @@ const useLoadBlockchainData = () => {
         },
       });
 
-      setContractListenerAdded(true);
+      return () => {
+        unwatchOccasion();
+        unwatchBalance();
+      };
     }
-  }, [publicClient, contractConfig, contractListenerAdded]);
+  }, [publicClient, contractConfig]);
 
   return {
     account,
