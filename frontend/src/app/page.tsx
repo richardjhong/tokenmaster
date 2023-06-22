@@ -10,7 +10,9 @@ import {
   CreateEvent,
 } from "./components";
 import { modalOptions } from "@/utils/modalOptions";
-import useLoadBlockchainData from "@/utils/useLoadBlockchainData";
+import useLoadBlockchainData, {
+  contractConfigType,
+} from "@/utils/useLoadBlockchainData";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -51,7 +53,7 @@ const Home = () => {
             occasion={occasion!}
             publicClient={publicClient!}
             walletClient={walletClient!}
-            contractConfig={contractConfig}
+            contractConfig={contractConfig as contractConfigType}
             setToggle={setToggle}
           />
         );
@@ -60,7 +62,7 @@ const Home = () => {
           <CreateEvent
             publicClient={publicClient!}
             walletClient={walletClient!}
-            contractConfig={contractConfig}
+            contractConfig={contractConfig as contractConfigType}
             setToggle={setToggle}
           />
         );

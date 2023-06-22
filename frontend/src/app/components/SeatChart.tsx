@@ -4,6 +4,7 @@ import { Occasion } from "../page";
 import {
   PublicClientType,
   WalletClientType,
+  contractConfigType,
 } from "@/utils/useLoadBlockchainData";
 import { toast } from "react-toastify";
 
@@ -11,7 +12,7 @@ interface SeatChartProps {
   occasion: Occasion;
   publicClient: PublicClientType;
   walletClient: WalletClientType;
-  contractConfig: any;
+  contractConfig: contractConfigType;
   setToggle: (toggle: boolean) => void;
 }
 
@@ -37,7 +38,9 @@ const SeatChart: React.FC<SeatChartProps> = ({
 
   const buyHandler = async (_seat: number) => {
     if (!walletClient?.account?.address) {
-      toast.error(`Please connect your wallet to complete purchase of seat ${_seat}`);
+      toast.error(
+        `Please connect your wallet to complete purchase of seat ${_seat}`,
+      );
       return;
     }
 
@@ -56,6 +59,7 @@ const SeatChart: React.FC<SeatChartProps> = ({
     await publicClient!.waitForTransactionReceipt({ hash });
 
     setHasSold(true);
+    toast.success(`${_seat} is now reserved`);
   };
 
   useEffect(() => {

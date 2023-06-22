@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
-import { Address, parseUnits } from "viem";
+import { parseUnits } from "viem";
 import {
   PublicClientType,
   WalletClientType,
+  contractConfigType,
 } from "@/utils/useLoadBlockchainData";
 
 interface CreateEventProps {
   publicClient: PublicClientType;
   walletClient: WalletClientType;
-  contractConfig: any;
+  contractConfig: contractConfigType;
   setToggle: (toggle: boolean) => void;
 }
 

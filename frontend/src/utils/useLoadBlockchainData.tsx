@@ -32,7 +32,15 @@ export interface Occasion {
 }
 
 type LogWithArg = Log & {
-  args: { latestOccasionIndex: bigint; latestBalance: bigint };
+  args: {
+    latestOccasionIndex: bigint;
+    latestBalance: bigint;
+  };
+};
+
+export type contractConfigType = {
+  abi: typeof TOKENMASTER_CONTRACT_ABI;
+  address: Address;
 };
 
 export type WalletClientType = ReturnType<typeof createWalletClient>;
@@ -47,7 +55,9 @@ const useLoadBlockchainData = () => {
   const [walletClient, setWalletClient] = useState<WalletClientType>();
   const [contractListenerAdded, setContractListenerAdded] =
     useState<boolean>(false);
-  const [contractConfig, setContractConfig] = useState<any>({});
+  const [contractConfig, setContractConfig] = useState<contractConfigType | {}>(
+    {},
+  );
   const [contractBalance, setContractBalance] = useState<string>("0");
 
   const mappedChain = {
@@ -133,12 +143,14 @@ const useLoadBlockchainData = () => {
   useEffect(() => {
     if (publicClient && !contractListenerAdded) {
       publicClient.watchContractEvent({
-        ...contractConfig,
+        abi: (contractConfig as contractConfigType).abi,
+        address: (contractConfig as contractConfigType).address,
         eventName: "OccasionCreated",
         onLogs: async (logs) => {
           const emittedLog = logs[0] as LogWithArg;
           const occasion: Occasion = (await publicClient.readContract({
-            ...contractConfig,
+            abi: (contractConfig as contractConfigType).abi,
+            address: (contractConfig as contractConfigType).address,
             functionName: "getOccasion",
             args: [emittedLog.args.latestOccasionIndex],
           })) as Occasion;
@@ -148,7 +160,8 @@ const useLoadBlockchainData = () => {
       });
 
       publicClient.watchContractEvent({
-        ...contractConfig,
+        abi: (contractConfig as contractConfigType).abi,
+        address: (contractConfig as contractConfigType).address,
         eventName: "BalanceUpdated",
         onLogs: async (logs) => {
           const emittedLog = logs[0] as LogWithArg;
