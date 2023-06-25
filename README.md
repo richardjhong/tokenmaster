@@ -76,30 +76,72 @@ This project started off with following along the YouTube tutorial listed in the
 
 ## Getting Started
 
+To get a local copy up and running follow these steps:
+
 ### Prerequisites
 
-This is an example of how to list things you need to use the software and how to install them.
+The frontend leverages window.ethereum to detect the network chainId and connected account's address; the hardhat config also uses a private key to deploy to the Ethereum Sepolia test network. In my case, I used a MetaMask account and MetaMask browser extension. 
 
-- npm
-  ```sh
-  npm install npm@latest -g
-  ```
+A [QuickNode](https://www.quicknode.com/) HTTP URL and [Etherscan](https://etherscan.io/) API key will be needed also for an .env file within the backend directory.
 
 ### Installation
 
-1. Get a free API Key at [https://example.com](https://example.com)
-2. Clone the repo
+1. Clone the repo
    ```sh
    git clone https://github.com/richardjhong/tokenmaster.git
    ```
-3. Install NPM packages
+2. Install NPM packages within the backend directory
    ```sh
-   npm install
+   cd backend && npm install
    ```
-4. Enter your API in `config.js`
+3. Create an env file at the root level of the backend directory named `.env`
+   Within this file copy in the following code and replace where appropriate.
+
    ```js
-   const API_KEY = "ENTER YOUR API";
+   QUICKNODE_HTTP_URL="ENTER YOUR QUICKNODE HTTP URL"
+   PRIVATE_KEY="ENTER YOUR METAMASK PRIVATE KEY HERE"
+   ETHERSCAN_API_KEY="ENTER YOUR ETHERSCAN API KEY HERE"
    ```
+
+4. a. While still in the backend directory, enter the following command to deploy your contract to the Sepolia network and record contract address afterwards (Note: this will take a while as the deployment also does verification on Etherscan):
+    ```sh
+    npx hardhat run scripts/deploy.ts --network sepolia
+    ```
+
+4. b. Alternatively to run a local blockchain and deploy the contract there, open a second terminal window also pointing to the backend directory. From there, within one terminal run the following command:
+    ```sh
+    npx hardhat node
+    ```
+
+    Make sure that the terminal shows the confirmation that a local blockchain is running with the following line in particular:
+    ```js
+    Started HTTP and WebSocket JSON-RPC server at http://127.0.0.1:8545/
+    ```
+    
+    Within the second terminal, run the following command and record the contract address afterwards: 
+    ```sh
+    npx hardhat run scripts/deploy.ts --network localhost
+    ```
+  
+5. Open a terminal window and change into the frontend directory. Within here, run the following command:
+    ```sh
+    npm i
+    ```
+
+6. Within the frontend directory, find the `frontend/constants/index.ts` file. Change the contract addresses within NetworkOptions to the deployed addresses within step 4. 
+    ```js
+    export const NetworkOptions = {
+      [NetworkName.LOCALHOST]: "ENTER YOUR LOCALHOST CONTRACT ADDRESS HERE",
+      [NetworkName.SEPOLIA]: "ENTER YOUR SEPOLIA CONTRACT ADDRESS HERE",
+    };
+    ```
+
+7. Within the same frontend pointed directory, run the following command:
+    ```sh
+      npm run dev
+    ```
+
+8. Lastly open `http://localhost:3000` within a browser.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
