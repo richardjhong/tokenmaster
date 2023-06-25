@@ -103,7 +103,7 @@ A [QuickNode](https://www.quicknode.com/) HTTP URL and [Etherscan](https://ether
    ETHERSCAN_API_KEY="ENTER YOUR ETHERSCAN API KEY HERE"
    ```
 
-4. a. While still in the backend directory, enter the following command to deploy your contract to the Sepolia network and record contract address afterwards (Note: this will take a while as the deployment also does verification on Etherscan):
+4. a. While still in the backend directory, enter the following command to deploy your contract to the Sepolia network and record the contract address afterwards (Note: this will take a while as there's a built in 40 second timer to give enough time for the contract to be written to the Sepolia network first prior to verification):
     ```sh
     npx hardhat run scripts/deploy.ts --network sepolia
     ```
@@ -125,7 +125,7 @@ A [QuickNode](https://www.quicknode.com/) HTTP URL and [Etherscan](https://ether
   
 5. Open a terminal window and change into the frontend directory. Within here, run the following command:
     ```sh
-    npm i
+    npm install
     ```
 
 6. Within the frontend directory, find the `frontend/constants/index.ts` file. Change the contract addresses within NetworkOptions to the deployed addresses within step 4. 
@@ -138,7 +138,7 @@ A [QuickNode](https://www.quicknode.com/) HTTP URL and [Etherscan](https://ether
 
 7. Within the same frontend pointed directory, run the following command:
     ```sh
-      npm run dev
+    npm run dev
     ```
 
 8. Lastly open `http://localhost:3000` within a browser.
@@ -149,9 +149,23 @@ A [QuickNode](https://www.quicknode.com/) HTTP URL and [Etherscan](https://ether
 
 ## Usage
 
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
+The frontend has some elements that are not interactable at the moment as the emphasis of this project was on learning web3 rather than building a robust web2 application. That being said, the main highlights of this project are:
 
-_For more examples, please refer to the [Documentation](https://example.com)_
+* When first loading the site, the page is presented with a "Connect" button on the top right of the page within the NavBar. After connecting to an account, the chainId of the network the account is connected to affects which smart contract to load: the one deployed on the localhost or the one live on sepolia. In addition, this connection of an account is necessary to complete the transactions in the following two features.
+
+* Any user can "reserve" a seat to an event via minting an NFT mapped to that event (assuming the user has the balance to complete the transaction as well as the seat is not reserved). To do so, a user clicks a "View Seat" button next to the appropriate event which opens a modal. From here, the user can reserve seats with a blue background. The user then should be prompted to complete the transaction within the MetaMask extension. If the user clicks on a seat to reserve but is not connected (and therefore there is no wallet address to complete the MetaMask transaction), a toast message instead will display to connect an account.
+
+* The contract deployer can list new occasions with the following fields:
+  - occasion name
+  - occasion cost (note: this field is formatted in ETH when trying to list an occasion.)
+  - number of tickets/seats for this occasion
+  - occasion time
+  - occasion date
+  - occasion location
+
+To list a contract, the contract itself has an onlyOwner modifier to finish the listing; as such the button UI to list an occasion will only display if the connected user account's address matches the contract owner's address. 
+
+Beyond these features, the useLoadBlockchain custom React hook changes whenever the user connects to a different account. The hook also listens for two emitted events from the contract; whenever the contract owner lists a new occasion or whenever a new NFT is minted. In the case of the former, the newly created occasion is appended to the list of occasions; in the case of the latter, the contract balance is updated. 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -189,7 +203,7 @@ Don't forget to give the project a star! Thanks again!
 
 ## License
 
-Distributed under the MIT License. See `LICENSE.txt` for more information.
+Distributed under the MIT License.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -197,7 +211,7 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 
 ## Contact
 
-Your Name - [@twitter_handle](https://twitter.com/twitter_handle) - email@email_client.com
+Richard Hong - rhong24@gmail.com
 
 Project Link: [https://github.com/richardjhong/tokenmaster](https://github.com/richardjhong/tokenmaster)
 
