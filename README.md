@@ -103,25 +103,25 @@ A [QuickNode](https://www.quicknode.com/) HTTP URL and [Etherscan](https://ether
    ETHERSCAN_API_KEY="ENTER YOUR ETHERSCAN API KEY HERE"
    ```
 
-4. a. While still in the backend directory, enter the following command to deploy your contract to the Sepolia network and record the contract address afterwards (Note: this will take a while as there's a built in 40 second timer to give enough time for the contract to be written to the Sepolia network first prior to verification):
-    ```sh
-    npx hardhat run scripts/deploy.ts --network sepolia
-    ```
+4. * a. While still in the backend directory, enter the following command to deploy your contract to the Sepolia network and record the contract address afterwards (Note: this will take a while as there's a built in 40 second timer to give enough time for the contract to be written to the Sepolia network first prior to verification):
 
-4. b. Alternatively to run a local blockchain and deploy the contract there, open a second terminal window also pointing to the backend directory. From there, within one terminal run the following command:
-    ```sh
-    npx hardhat node
-    ```
+      ```sh
+      npx hardhat run scripts/deploy.ts --network sepolia
+      ```
+   * b. Alternatively to run a local blockchain and deploy the contract there, open a second terminal window also pointing to the backend directory. From there, within one terminal run the following command:
+      ```sh
+      npx hardhat node
+      ```
+      Make sure that the terminal shows the confirmation that a local blockchain is running with the following line in particular:
 
-    Make sure that the terminal shows the confirmation that a local blockchain is running with the following line in particular:
-    ```js
-    Started HTTP and WebSocket JSON-RPC server at http://127.0.0.1:8545/
-    ```
-    
-    Within the second terminal, run the following command and record the contract address afterwards: 
-    ```sh
-    npx hardhat run scripts/deploy.ts --network localhost
-    ```
+      ```js
+      Started HTTP and WebSocket JSON-RPC server at http://127.0.0.1:8545/
+      ```
+      
+      Within the second terminal, run the following command and record the contract address afterwards: 
+      ```sh
+      npx hardhat run scripts/deploy.ts --network localhost
+      ```
   
 5. Open a terminal window and change into the frontend directory. Within here, run the following command:
     ```sh
