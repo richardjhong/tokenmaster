@@ -41,7 +41,6 @@
     </li>
     <li><a href="#usage">Usage</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
-    <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
     <li><a href="#acknowledgments">Acknowledgments</a></li>
@@ -122,13 +121,18 @@ A [QuickNode](https://www.quicknode.com/) HTTP URL and [Etherscan](https://ether
       ```sh
       npx hardhat run scripts/deploy.ts --network localhost
       ```
+
+5. To run the tests on the smart contract, run the following command while a terminal is pointing to the backend directory:
+    ```sh
+    npx hardhat test
+    ```
   
-5. Open a terminal window and change into the frontend directory. Within here, run the following command:
+6. Open a terminal window and change into the frontend directory. Within here, run the following command:
     ```sh
     npm install
     ```
 
-6. Within the frontend directory, find the `frontend/constants/index.ts` file. Change the contract addresses within NetworkOptions to the deployed addresses within step 4. 
+7. Within the frontend directory, find the `frontend/constants/index.ts` file. Change the contract addresses within NetworkOptions to the deployed addresses within step 4. 
     ```js
     export const NetworkOptions = {
       [NetworkName.LOCALHOST]: "ENTER YOUR LOCALHOST CONTRACT ADDRESS HERE",
@@ -136,12 +140,12 @@ A [QuickNode](https://www.quicknode.com/) HTTP URL and [Etherscan](https://ether
     };
     ```
 
-7. Within the same frontend pointed directory, run the following command:
+8. Within the same frontend pointed directory, run the following command:
     ```sh
     npm run dev
     ```
 
-8. Lastly open `http://localhost:3000` within a browser.
+9. Lastly open `http://localhost:3000` within a browser.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -149,11 +153,15 @@ A [QuickNode](https://www.quicknode.com/) HTTP URL and [Etherscan](https://ether
 
 ## Usage
 
+**Terminology**: As events are emitted and listened to within the app, this app uses *occasions* on the frontend for listings and minting NFTs mapped to an occasion.
+
+<br>
+
 The frontend has some elements that are not interactable at the moment as the emphasis of this project was on learning web3 rather than building a robust web2 application. That being said, the main highlights of this project are:
 
 * When first loading the site, the page is presented with a "Connect" button on the top right of the page within the NavBar. After connecting to an account, the chainId of the network the account is connected to affects which smart contract to load: the one deployed on the localhost or the one live on sepolia. In addition, this connection of an account is necessary to complete the transactions in the following two features.
 
-* Any user can "reserve" a seat to an event via minting an NFT mapped to that event (assuming the user has the balance to complete the transaction as well as the seat is not reserved). To do so, a user clicks a "View Seat" button next to the appropriate event which opens a modal. From here, the user can reserve seats with a blue background. The user then should be prompted to complete the transaction within the MetaMask extension. If the user clicks on a seat to reserve but is not connected (and therefore there is no wallet address to complete the MetaMask transaction), a toast message instead will display to connect an account.
+* Any user can reserve a seat to an event via minting an NFT mapped to that event (assuming the user has the balance to complete the transaction and the seat is not reserved). To do so, a user clicks the "View Seat" button next to the appropriate event which opens a modal. From here, the user can reserve seats with a blue background. The user then should be prompted to complete the transaction within the MetaMask extension. If the user clicks on a seat to reserve but is not connected (and therefore there is no wallet address to complete the MetaMask transaction), a toast message instead will display to connect an account.
 
 * The contract deployer can list new occasions with the following fields:
   - occasion name
@@ -163,9 +171,10 @@ The frontend has some elements that are not interactable at the moment as the em
   - occasion date
   - occasion location
 
+
 To list a contract, the contract itself has an onlyOwner modifier to finish the listing; as such the button UI to list an occasion will only display if the connected user account's address matches the contract owner's address. 
 
-Beyond these features, the useLoadBlockchain custom React hook changes whenever the user connects to a different account. The hook also listens for two emitted events from the contract; whenever the contract owner lists a new occasion or whenever a new NFT is minted. In the case of the former, the newly created occasion is appended to the list of occasions; in the case of the latter, the contract balance is updated. 
+Beyond these features, the useLoadBlockchain custom React hook changes whenever the user connects to a different account. The hook also listens for two emitted events from the contract: whenever the contract owner lists a new occasion or whenever a new NFT is minted. In the case of the former, the newly created occasion is appended to the list of occasions; in the case of the latter, the contract balance is updated. 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -173,29 +182,10 @@ Beyond these features, the useLoadBlockchain custom React hook changes whenever 
 
 ## Roadmap
 
-- [ ] Feature 1
-- [ ] Feature 2
-- [ ] Feature 3
-  - [ ] Nested Feature
-
-See the [open issues](https://github.com/richardjhong/tokenmaster/issues) for a full list of proposed features (and known issues).
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-<!-- CONTRIBUTING -->
-
-## Contributing
-
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
-
-If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
-Don't forget to give the project a star! Thanks again!
-
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+* [ ] Migrate to using [wagmi](https://wagmi.sh/) hooks
+* [ ] Add validation for fields to ensure good input
+* [ ] Refactor smart contract with proxy upgrade pattern
+* [ ] Clean up tailwind css
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -223,8 +213,6 @@ Project Link: [https://github.com/richardjhong/tokenmaster](https://github.com/r
 
 - [Code a Web 3.0 Ticketmaster Clone Step-By-Step with Solidity, Ethers.js, React & Hardhat](https://www.youtube.com/watch?v=_H9Qppf13GI&ab_channel=DappUniversity)
 - [Best-README-Template](https://github.com/othneildrew/Best-README-Template)
-- []()
-
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- MARKDOWN LINKS & IMAGES -->
