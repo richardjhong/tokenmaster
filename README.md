@@ -51,7 +51,7 @@
 
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]]()
+[![Main Page][event-page]]()
 
 This project started off with following along the YouTube tutorial listed in the <a href="#acknowledgments">Acknowledgments</a> section. I then branched off with adding features such as building the create event feature, migrating styling to tailwind css, and migrating from ethers to viem on the frontend. 
 
@@ -157,9 +157,24 @@ A [QuickNode](https://www.quicknode.com/) HTTP URL and [Etherscan](https://ether
 
 <br>
 
+<p align="center">Reserving a Seat</p>
+
+[![Seat Mint Feature][seat-mint]]()
+
+<p align="center">Listing an occasion - Pending</p>
+
+[![List Occasion Feature - Pending][list-occasion_pending]]()
+
+<p align="center">Listing an occasion - Completed</p>
+
+[![List Occasion Feature - Completed][list-occasion_completed]]()
+
+<br>
+
 The frontend has some elements that are not interactable at the moment as the emphasis of this project was on learning web3 rather than building a robust web2 application. That being said, the main highlights of this project are:
 
 * When first loading the site, the page is presented with a "Connect" button on the top right of the page within the NavBar. After connecting to an account, the chainId of the network the account is connected to affects which smart contract to load: the one deployed on the localhost or the one live on sepolia. In addition, this connection of an account is necessary to complete the transactions in the following two features.
+
 
 * Any user can reserve a seat to an event via minting an NFT mapped to that event (assuming the user has the balance to complete the transaction and the seat is not reserved). To do so, a user clicks the "View Seat" button next to the appropriate event which opens a modal. From here, the user can reserve seats with a blue background. The user then should be prompted to complete the transaction within the MetaMask extension. If the user clicks on a seat to reserve but is not connected (and therefore there is no wallet address to complete the MetaMask transaction), a toast message instead will display to connect an account.
 
@@ -229,7 +244,11 @@ Project Link: [https://github.com/richardjhong/tokenmaster](https://github.com/r
 [license-url]: https://opensource.org/licenses/MIT
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/linkedin_username
-[product-screenshot]: ./assets/event_page.png
+[event-page]: ./assets/event_page.png
+[seat-mint]: ./assets/seat_mint.png
+[list-occasion]: ./assets/list_occasion.png
+[list-occasion_pending]: ./assets/list-occasion_pending.png
+[list-occasion_completed]: ./assets/list-occasion_completed.png
 [Next.js]: https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
 [Next-url]: https://nextjs.org/
 [React.js]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
